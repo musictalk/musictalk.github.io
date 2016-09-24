@@ -1,0 +1,57 @@
+<html>
+
+<head>
+    <title>Embedding Elm</title>
+    <script src="build/lib.js"></script>
+    <script src="build/spotify-web-api.js"></script>
+</head>
+
+<body>
+    <!--See the <a href="http://github.com/evancz/elm-html-and-js">source code</a>-->
+    <div id="column">
+        <h1>Stamps</h1>
+        <div id="elm-stamps"></div>
+    </div>
+
+    <div id="disqus_thread"></div>
+    <!--<script>
+
+/**
+ *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+ *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+/*
+var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    s.src = '//musictalk-1.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+})();
+</script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>-->
+</body>
+
+<script type="text/javascript">
+  // Show the stamp module in the "elm-stamps" div.
+  var div = document.getElementById('elm-stamps');
+  var app = Elm.Main.embed(div);
+  app.ports.redirect.subscribe(function(urlStr){
+      console.log("JS: ",urlStr);
+    //   window.location.replace(urlStr);
+  });
+  // Reset the number of stamps in the Elm code.
+  // The value we send does not matter, we just
+  // need the event.
+  function resetStamps() {
+    app.ports.reset.send([]);
+  }
+
+  var s = new SpotifyWebApi();
+  console.log(s);
+</script>
+
+</html>
