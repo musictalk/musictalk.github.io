@@ -2,6 +2,7 @@ module Spotify exposing
     ( loginUrl
     , getUserInfo
     , getPlaylists
+    , getPlaylistTracks
     )
 
 import Http exposing (Error)
@@ -11,12 +12,15 @@ import Platform.Cmd
 
 import Model exposing (..)
 
-loginUrl : String
-loginUrl =
+import Navigation
+
+loginUrl : String -> String
+loginUrl returnUri =
+    let asd = Debug.log "loc" Navigation.Location in
     Http.url "https://accounts.spotify.com/authorize"
         [ ("client_id","0775af0cec204cbf96932239352abd17")
         , ("response_type","token")
-        , ("redirect_uri","http://localhost:8000/index.html")
+        , ("redirect_uri", returnUri ++ "/index.html")
         , ("scope", "playlist-read-private")
         ]
 
@@ -83,7 +87,6 @@ fetchListDetails token l =
     getSpotify token (decodePlaylistTracks l) ("https://api.spotify.com/v1/users/"++ l.owner ++"/playlists/" ++ l.id ++ "/tracks")
     -- Task.succeed l
 
-
 fetchListsDetails : SpotifyToken -> SpotifyData -> Task Error SpotifyData
 fetchListsDetails token data =
     case data of
@@ -92,10 +95,11 @@ fetchListsDetails token data =
 
 getPlaylists : SpotifyToken -> Cmd Msg
 getPlaylists token =
-    
     getSpotify token decodePlaylists "https://api.spotify.com/v1/me/playlists"
-    `Task.andThen` fetchListsDetails token
+    -- `Task.andThen` fetchListsDetails token
     |> performTask token
 
-getPlaylistTracks : SpotifyToken -> UserId -> PlaylistId -> List Song
-getPlaylistTracks token userId playlistId = []
+getPlaylistTracks : SpotifyToken -> SpotifyPlaylist -> Cmd Msg
+getPlaylistTracks token l =
+    fetchListDetails token l
+    |> Task.perform (ReceiveTracks << Err) (ReceiveTracks << Ok)

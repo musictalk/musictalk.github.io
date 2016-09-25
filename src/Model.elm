@@ -2,10 +2,18 @@ module Model exposing (..)
 
 import Http
 
-type Model = Unlogged
-           | GotToken SpotifyToken
-           | LoggedIn (SpotifyToken, SpotifyUserData, List SpotifyPlaylist)
+type alias Location = String
+type alias Flags = { location: Location }
 
+type ModelState = Unlogged
+                | GotToken SpotifyToken
+                | LoggedIn (SpotifyToken, SpotifyUserData, List SpotifyPlaylist)
+
+
+type alias Model =
+  { flags : Flags
+  , state : ModelState 
+  }
 type alias SpotifyToken = String
 type alias UserId = String
 type alias PlaylistId = String
@@ -30,3 +38,6 @@ type SpotifyData = SpotifyUser SpotifyUserData
 type Msg
   = StartSpotifyLogin
   | SpotifyResponse (SpotifyToken, SpotifyData)
+  | LoadPlaylist SpotifyPlaylist
+  | ReceiveTracks (Result Http.Error SpotifyPlaylist)
+  | LoadPlaylistComments SpotifyPlaylist

@@ -13,9 +13,10 @@ import Http
 import Model exposing (..)
 import Spotify
 
-main : Program Never
+
+main : Program Flags
 main =
-  Navigation.program urlParser
+  Navigation.programWithFlags urlParser
     { init = init
     , view = view
     , update = update
@@ -24,13 +25,21 @@ main =
     }
 
 port redirect : String -> Cmd msg
+port loadComments : SpotifyPlaylist -> Cmd msg
 
 
 type alias QueryString =  { token : String, tokenType : String, expiration : String }
-type Page = Index | LoginResult QueryString
+type Page = Index | LoginResult QueryString | Playlist String String
 toUrl : Model -> String
 toUrl count =
   "#/" ++ toString count
+
+-- http://localhost:8000/index.html#!/user/123/playlist/456
+playlistParser : UrlParser.Parser (Page -> a) a
+playlistParser =
+  UrlParser.s "#!" </> UrlParser.s "user" </> UrlParser.string </> UrlParser.s "playlist" </> UrlParser.string
+  |> UrlParser.format Playlist
+
 
 pageParser : UrlParser.Parser (Page -> a) a
 pageParser =
@@ -56,6 +65,7 @@ pageParser =
 fromUrl : String -> Result String Page
 fromUrl url =
     UrlParser.parse identity (UrlParser.oneOf [
+      playlistParser,
       pageParser,
       UrlParser.custom "" (\s -> if String.isEmpty s then Ok Index else Err "NotEmpty")
     ]) url
@@ -82,11 +92,14 @@ urlUpdate result model =
 
 
 -- Init Model
-init : Result String Page -> (Model, Cmd Msg)
-init r =
+init : Flags -> Result String Page -> (Model, Cmd Msg)
+init flags r =
   case Debug.log "init" r of
-    Ok (LoginResult r) -> (GotToken r.token, Cmd.batch[ Spotify.getUserInfo r.token, Spotify.getPlaylists r.token ])
-    _ -> urlUpdate r Unlogged
+    Ok (LoginResult r) ->
+      ( {flags = flags, state = GotToken r.token }
+      , Cmd.batch[ Spotify.getUserInfo r.token, Spotify.getPlaylists r.token ]
+      )
+    _ -> urlUpdate r  {flags = flags, state = Unlogged }
 
 -- SUBS
 
@@ -102,21 +115,50 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   
   case Debug.log "update" msg of
-    StartSpotifyLogin -> (model, redirect Spotify.loginUrl)
+    StartSpotifyLogin -> (model, redirect <| Spotify.loginUrl model.flags.location)
   
     SpotifyResponse (token, SpotifyUser data) ->
-      (LoggedIn (token, data, []), Cmd.none)
+      ( {model | state = LoggedIn (token, data, []) }
+      , Cmd.none
+      )
 
     SpotifyResponse (token, SpotifyPlaylists data) ->
-      case model of
-        LoggedIn(t,u,_) -> (LoggedIn (t, u, data), Cmd.none)
+      case model.state of
+        LoggedIn(t,u,_) ->
+          ( {model | state = LoggedIn (t, u, data) }
+          , Cmd.none
+          )
         _ -> Debug.crash (toString (model,msg))
       -- ((LoggedIn (t, u, data)), Cmd.none)
       -- (LoggedIn (t,u,[]), Cmd.none)
     SpotifyResponse (_, SpotifyError error) ->
       case error of
-        Http.BadResponse 401 s -> (Unlogged, redirect Spotify.loginUrl)
+        Http.BadResponse 401 s ->
+          ( {model | state = Unlogged }
+          , redirect <| Spotify.loginUrl model.flags.location
+          )
         _ -> Debug.crash (toString msg)  
+
+    LoadPlaylist p ->
+      case model.state of
+        LoggedIn(t,u,d) ->
+          ( {model | state = LoggedIn (t, u, d) }
+          , Spotify.getPlaylistTracks t p
+          )
+        _ -> Debug.crash (toString (model,msg))
+
+    ReceiveTracks res ->
+      case (res, model.state) of
+        (Ok playlist, LoggedIn(t,u,d)) ->
+          let dd = List.map (\p -> if p.id == playlist.id then playlist else p) d in
+          ( {model | state = LoggedIn (t, u, dd) }
+          , Cmd.none
+          )
+        _ -> Debug.crash (toString (model,msg))
+
+    LoadPlaylistComments p ->
+      (model, loadComments p)
+      
     -- _ -> Debug.crash (toString msg)
 
 
@@ -146,11 +188,13 @@ viewPlaylist p =
     [ text p.name
     , text p.owner
     , Html.ul [] (List.map viewSong p.songs)
+    , button [ onClick <| LoadPlaylist p] [ text "load" ]
+    , button [ onClick <| LoadPlaylistComments p] [ text "comments" ]
     ]
 
 view : Model -> Html Msg
 view model =
-  case model of
+  case model.state of
     Unlogged -> spotifyLoginView
     GotToken token -> div [] [ text (toString model), text token ]
     LoggedIn (token, user, playlists) ->
