@@ -7,6 +7,7 @@ import Regex
 import String
 import Html.Events exposing (onClick)
 import Html.Attributes
+import Http
 
 -- import Commands
 import Model exposing (..)
@@ -112,8 +113,11 @@ update msg model =
         _ -> Debug.crash (toString (model,msg))
       -- ((LoggedIn (t, u, data)), Cmd.none)
       -- (LoggedIn (t,u,[]), Cmd.none)
-
-    _ -> Debug.crash (toString msg)
+    SpotifyResponse (_, SpotifyError error) ->
+      case error of
+        Http.BadResponse 401 s -> (Unlogged, redirect Spotify.loginUrl)
+        _ -> Debug.crash (toString msg)  
+    -- _ -> Debug.crash (toString msg)
 
 
 -- VIEW
@@ -128,8 +132,21 @@ userProfile user =
     , div [] (List.map (\x -> Html.img [Html.Attributes.src x] []) user.photo) 
     ]
 
+viewSong : Song -> Html Msg
+viewSong s =
+  Html.li []
+    [ text s.name
+    , text s.album
+    , text s.artist
+    ]
+
 viewPlaylist : SpotifyPlaylist -> Html Msg
-viewPlaylist p = Html.li [] [ text p.name, text p.owner ]
+viewPlaylist p =
+  Html.li []
+    [ text p.name
+    , text p.owner
+    , Html.ul [] (List.map viewSong p.songs)
+    ]
 
 view : Model -> Html Msg
 view model =

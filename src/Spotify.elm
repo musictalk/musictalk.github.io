@@ -35,7 +35,7 @@ get token decoder url =
 
 performTask token = Task.perform (\x -> SpotifyResponse(token, SpotifyError x)) (\x -> SpotifyResponse(token, x))
 
-getSpotify : SpotifyToken -> Decoder SpotifyData -> String -> Task Error SpotifyData
+getSpotify : SpotifyToken -> Decoder a -> String -> Task Error a
 getSpotify token decoder url =
     get token decoder url
 
@@ -52,30 +52,49 @@ getUserInfo token =
 
 decodePlaylist : Decoder SpotifyPlaylist
 decodePlaylist =
-    object2 (,) ("name" := string) (at ["owner", "id"] string)
+    object3 (,,)
+        ("id" := string)
+        ("name" := string)
+        (at ["owner", "id"] string)
     -- ("" := string)
-    |> map (\(x,y) -> {name = x, owner = y, songs = []})
+    |> map (\(id, name, owner) -> { id = id, name = name, owner = owner, songs = []})
 
 decodePlaylists : Decoder SpotifyData
 decodePlaylists =
     "items" := list decodePlaylist
     |> map SpotifyPlaylists
 
-fetchListDetails : SpotifyPlaylist -> Task Error SpotifyPlaylist
-fetchListDetails l = Task.succeed l
+
+decodeTrack : Decoder Song
+decodeTrack =
+    object3 Song
+        (at ["track","name"] string)
+        (at ["track", "album","name"] string)
+        (at ["track", "artists" ] (list ("name" := string)) |> map (List.head >> Maybe.withDefault "<Unknown>"))
+        --  |> map (\x -> {name = x})
+
+decodePlaylistTracks : SpotifyPlaylist -> Decoder SpotifyPlaylist
+decodePlaylistTracks l =
+    -- Json.Decode.succeed l
+    "items" := list decodeTrack |> map (\songs -> {l | songs = songs})
+
+fetchListDetails : SpotifyToken -> SpotifyPlaylist -> Task Error SpotifyPlaylist
+fetchListDetails token l =
+    getSpotify token (decodePlaylistTracks l) ("https://api.spotify.com/v1/users/"++ l.owner ++"/playlists/" ++ l.id ++ "/tracks")
+    -- Task.succeed l
 
 
-fetchListsDetails : SpotifyData -> Task Error SpotifyData
-fetchListsDetails data =
+fetchListsDetails : SpotifyToken -> SpotifyData -> Task Error SpotifyData
+fetchListsDetails token data =
     case data of
-        SpotifyPlaylists lists -> Task.map SpotifyPlaylists <| Task.sequence (List.map fetchListDetails lists)
+        SpotifyPlaylists lists -> Task.map SpotifyPlaylists <| Task.sequence (List.map (fetchListDetails token) lists)
         _ -> Debug.crash "no lists"
 
 getPlaylists : SpotifyToken -> Cmd Msg
 getPlaylists token =
     
     getSpotify token decodePlaylists "https://api.spotify.com/v1/me/playlists"
-    `Task.andThen` (\asd -> getSpotify token decodePlaylists "https://api.spotify.com/v1/me/playlists")
+    `Task.andThen` fetchListsDetails token
     |> performTask token
 
 getPlaylistTracks : SpotifyToken -> UserId -> PlaylistId -> List Song

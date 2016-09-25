@@ -42,7 +42,7 @@ var disqus_config = function () {
   app.ports.redirect.subscribe(function(urlStr){
       console.log("JS: ",urlStr);
     //   window.location.replace(urlStr);
-    //   window.location.replace(urlStr);
+      window.location.replace(urlStr);
   });
   // Reset the number of stamps in the Elm code.
   // The value we send does not matter, we just

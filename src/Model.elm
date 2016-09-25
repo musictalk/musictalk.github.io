@@ -13,10 +13,14 @@ type alias PlaylistId = String
 type alias SpotifyUserData = { name : String
                              , photo : List String }
 
-type alias Song = { name : String }
+type alias Song = { name : String
+                  , album : String
+                  , artist : String
+                  }
 
-type alias SpotifyPlaylist = { name : String 
-                             , owner : String
+type alias SpotifyPlaylist = { id : String
+                             , name : String 
+                             , owner : UserId
                              , songs : List Song }
 
 type SpotifyData = SpotifyUser SpotifyUserData
