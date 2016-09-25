@@ -6,7 +6,7 @@ import UrlParser exposing ((</>))
 import Regex
 import String
 import Html.Events exposing (onClick)
-import Html.Attributes
+import Html.Attributes exposing (class)
 import Http
 
 -- import Commands
@@ -26,7 +26,7 @@ main =
 
 port redirect : String -> Cmd msg
 port loadComments : SpotifyPlaylist -> Cmd msg
-
+port playlistsLoaded : String -> Cmd msg
 
 type alias QueryString =  { token : String, tokenType : String, expiration : String }
 type Page = Index | LoginResult QueryString | Playlist String String
@@ -126,7 +126,7 @@ update msg model =
       case model.state of
         LoggedIn(t,u,_) ->
           ( {model | state = LoggedIn (t, u, data) }
-          , Cmd.none
+          , playlistsLoaded ""
           )
         _ -> Debug.crash (toString (model,msg))
       -- ((LoggedIn (t, u, data)), Cmd.none)
@@ -184,7 +184,7 @@ viewSong s =
 
 viewPlaylist : SpotifyPlaylist -> Html Msg
 viewPlaylist p =
-  Html.li []
+  Html.li [class "playlist", Html.Attributes.attribute "data-disqus-identifier" (Spotify.playlistId p)]
     [ text p.name
     , text p.owner
     , Html.ul [] (List.map viewSong p.songs)
@@ -199,7 +199,8 @@ view model =
     GotToken token -> div [] [ text (toString model), text token ]
     LoggedIn (token, user, playlists) ->
       div []
-        [ Html.ul []
+        [ div [ Html.Attributes.id "disqussions_wrapper" ] []
+        , Html.ul []
             [ Html.li [] [text token]
             , Html.li [] [userProfile user]
             ]

@@ -9759,8 +9759,8 @@ var _user$project$Spotify$fetchListsDetails = F2(
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Spotify',
 				{
-					start: {line: 92, column: 5},
-					end: {line: 94, column: 36}
+					start: {line: 96, column: 5},
+					end: {line: 98, column: 36}
 				},
 				_p3)('no lists');
 		}
@@ -9802,6 +9802,12 @@ var _user$project$Spotify$loginUrl = function (returnUri) {
 				{ctor: '_Tuple2', _0: 'scope', _1: 'playlist-read-private'}
 			]));
 };
+var _user$project$Spotify$playlistId = function (playlist) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		playlist.owner,
+		A2(_elm_lang$core$Basics_ops['++'], '/', playlist.id));
+};
 
 var _user$project$Main$viewSong = function (s) {
 	return A2(
@@ -9819,7 +9825,13 @@ var _user$project$Main$viewPlaylist = function (p) {
 	return A2(
 		_elm_lang$html$Html$li,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$class('playlist'),
+				A2(
+				_elm_lang$html$Html_Attributes$attribute,
+				'data-disqus-identifier',
+				_user$project$Spotify$playlistId(p))
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html$text(p.name),
@@ -9913,6 +9925,14 @@ var _user$project$Main$view = function (model) {
 					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$id('disqussions_wrapper')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[])),
 						A2(
 						_elm_lang$html$Html$ul,
 						_elm_lang$core$Native_List.fromArray(
@@ -10009,6 +10029,11 @@ var _user$project$Main$loadComments = _elm_lang$core$Native_Platform.outgoingPor
 				})
 		};
 	});
+var _user$project$Main$playlistsLoaded = _elm_lang$core$Native_Platform.outgoingPort(
+	'playlistsLoaded',
+	function (v) {
+		return v;
+	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p4 = A2(_elm_lang$core$Debug$log, 'update', msg);
@@ -10050,7 +10075,7 @@ var _user$project$Main$update = F2(
 										state: _user$project$Model$LoggedIn(
 											{ctor: '_Tuple3', _0: _p5._0._0, _1: _p5._0._1, _2: _p4._0._1._0})
 									}),
-								_1: _elm_lang$core$Platform_Cmd$none
+								_1: _user$project$Main$playlistsLoaded('')
 							};
 						} else {
 							return _elm_lang$core$Native_Utils.crashCase(

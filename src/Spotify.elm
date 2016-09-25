@@ -3,6 +3,7 @@ module Spotify exposing
     , getUserInfo
     , getPlaylists
     , getPlaylistTracks
+    , playlistId
     )
 
 import Http exposing (Error)
@@ -13,6 +14,9 @@ import Platform.Cmd
 import Model exposing (..)
 
 import Navigation
+
+playlistId : SpotifyPlaylist -> String
+playlistId playlist = playlist.owner ++ "/" ++ playlist.id
 
 loginUrl : String -> String
 loginUrl returnUri =
