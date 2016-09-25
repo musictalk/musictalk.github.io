@@ -14,12 +14,22 @@
         {"taskName": "-v"},
         {
             "taskName": "make",
-            "isBuildCommand": true,
+        "isBuildCommand": true,
             "showOutput": "always",
             "args": [
+                "src\\Model.elm",
                 "src\\Main.elm",
+                "src\\Spotify.elm",
                 "--output", "build\\lib.js",
                 "--warn"
+            ]
+        },
+        {
+            "taskName": "test",
+            "isTestCommand": true,
+            "suppressTaskName": true,
+            "args": [
+                "make", "--yes", "test/Test.elm raw-test.js"
             ]
         }
     ]

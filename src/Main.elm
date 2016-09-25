@@ -5,10 +5,12 @@ import Navigation
 import UrlParser exposing ((</>))
 import Regex
 import String
--- import Html.Events exposing (onClick)
+import Html.Events exposing (onClick)
+import Html.Attributes
 
 -- import Commands
 import Model exposing (..)
+import Spotify
 
 main : Program Never
 main =
@@ -53,6 +55,7 @@ pageParser =
 fromUrl : String -> Result String Page
 fromUrl url =
     UrlParser.parse identity (UrlParser.oneOf [
+      pageParser,
       UrlParser.custom "" (\s -> if String.isEmpty s then Ok Index else Err "NotEmpty")
     ]) url
 
@@ -68,6 +71,7 @@ sense.
 urlUpdate : Result String Page -> Model -> (Model, Cmd Msg)
 urlUpdate result model =
   case Debug.log "urlUpdate" result of
+    -- Ok Index -> (model, redirect Spotify.loginUrl)
     Ok newCount ->
       (model, Cmd.none)
 
@@ -78,8 +82,10 @@ urlUpdate result model =
 
 -- Init Model
 init : Result String Page -> (Model, Cmd Msg)
-
-init r = urlUpdate r Unlogged
+init r =
+  case Debug.log "init" r of
+    Ok (LoginResult r) -> (GotToken r.token, Cmd.batch[ Spotify.getUserInfo r.token, Spotify.getPlaylists r.token ])
+    _ -> urlUpdate r Unlogged
 
 -- SUBS
 
@@ -95,22 +101,51 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   
   case Debug.log "update" msg of
+    StartSpotifyLogin -> (model, redirect Spotify.loginUrl)
+  
+    SpotifyResponse (token, SpotifyUser data) ->
+      (LoggedIn (token, data, []), Cmd.none)
 
-    Login token -> (model, Cmd.none)
+    SpotifyResponse (token, SpotifyPlaylists data) ->
+      case model of
+        LoggedIn(t,u,_) -> (LoggedIn (t, u, data), Cmd.none)
+        _ -> Debug.crash (toString (model,msg))
+      -- ((LoggedIn (t, u, data)), Cmd.none)
+      -- (LoggedIn (t,u,[]), Cmd.none)
 
-    -- LoginRequest token -> (model, Cmd.none)
-
-    LoginError error -> (model, Cmd.none)
-
+    _ -> Debug.crash (toString msg)
 
 
 -- VIEW
 
+spotifyLoginView : Html Msg
+spotifyLoginView = button [onClick StartSpotifyLogin] [ text "Log to spotify" ]
+
+userProfile : SpotifyUserData -> Html Msg
+userProfile user =
+  div []
+    [ text user.name
+    , div [] (List.map (\x -> Html.img [Html.Attributes.src x] []) user.photo) 
+    ]
+
+viewPlaylist : SpotifyPlaylist -> Html Msg
+viewPlaylist p = Html.li [] [ text p.name, text p.owner ]
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ button [] [ text "-" ]
-    , div [] [ text (toString model) ]
-    , button [] [ text "+" ]
-    ]
+  case model of
+    Unlogged -> spotifyLoginView
+    GotToken token -> div [] [ text (toString model), text token ]
+    LoggedIn (token, user, playlists) ->
+      div []
+        [ Html.ul []
+            [ Html.li [] [text token]
+            , Html.li [] [userProfile user]
+            ]
+        , Html.ul [] (List.map viewPlaylist playlists)
+          
+        ]
+        -- div []
+      --   [ div [] [ text (toString model) ]
+      --   , button [] [ text "+" ]
+      --   ]
