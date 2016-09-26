@@ -29,7 +29,8 @@ type alias Song = { name : String
 type alias SpotifyPlaylist = { id : String
                              , name : String 
                              , owner : UserId
-                             , songs : List Song }
+                             , songs : List Song
+                             , image : String }
 
 type SpotifyData = SpotifyUser SpotifyUserData
                  | SpotifyPlaylists (List SpotifyPlaylist) 

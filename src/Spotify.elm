@@ -60,12 +60,14 @@ getUserInfo token =
 
 decodePlaylist : Decoder SpotifyPlaylist
 decodePlaylist =
-    object3 (,,)
+    object5 SpotifyPlaylist
         ("id" := string)
         ("name" := string)
         (at ["owner", "id"] string)
+        (succeed [])
+        ("images" := list ("url" := string) |> map (List.head >> Maybe.withDefault ""))
     -- ("" := string)
-    |> map (\(id, name, owner) -> { id = id, name = name, owner = owner, songs = []})
+    --|> map (\(id, name, owner) -> { id = id, name = name, owner = owner, songs = []})
 
 decodePlaylists : Decoder SpotifyData
 decodePlaylists =

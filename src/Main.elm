@@ -1,24 +1,22 @@
 port module Main exposing (..)
 
-import Html exposing (Html, button, div, text)
 import Navigation
 import UrlParser exposing ((</>))
 import Regex
 import String
-import Html.Events exposing (onClick)
-import Html.Attributes exposing (class)
 import Http
 
 -- import Commands
 import Model exposing (..)
 import Spotify
+import Views
 
 
 main : Program Flags
 main =
   Navigation.programWithFlags urlParser
     { init = init
-    , view = view
+    , view = Views.view
     , update = update
     , urlUpdate = urlUpdate
     , subscriptions = subscriptions 
@@ -161,53 +159,3 @@ update msg model =
       
     -- _ -> Debug.crash (toString msg)
 
-
--- VIEW
-
-spotifyLoginView : Html Msg
-spotifyLoginView = button [onClick StartSpotifyLogin] [ text "Log to spotify" ]
-
-userProfile : SpotifyUserData -> Html Msg
-userProfile user =
-  div []
-    [ text user.name
-    , div [] (List.map (\x -> Html.img [Html.Attributes.src x] []) user.photo) 
-    ]
-
-viewSong : Song -> Html Msg
-viewSong s =
-  Html.li []
-    [ text s.name
-    , text s.album
-    , text s.artist
-    ]
-
-viewPlaylist : SpotifyPlaylist -> Html Msg
-viewPlaylist p =
-  Html.li [class "playlist", Html.Attributes.attribute "data-disqus-identifier" (Spotify.playlistId p)]
-    [ text p.name
-    , text p.owner
-    , Html.ul [] (List.map viewSong p.songs)
-    , button [ onClick <| LoadPlaylist p] [ text "load" ]
-    , button [ onClick <| LoadPlaylistComments p] [ text "comments" ]
-    ]
-
-view : Model -> Html Msg
-view model =
-  case model.state of
-    Unlogged -> spotifyLoginView
-    GotToken token -> div [] [ text (toString model), text token ]
-    LoggedIn (token, user, playlists) ->
-      div []
-        [ div [ Html.Attributes.id "disqussions_wrapper" ] []
-        , Html.ul []
-            [ Html.li [] [text token]
-            , Html.li [] [userProfile user]
-            ]
-        , Html.ul [] (List.map viewPlaylist playlists)
-          
-        ]
-        -- div []
-      --   [ div [] [ text (toString model) ]
-      --   , button [] [ text "+" ]
-      --   ]

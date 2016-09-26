@@ -9561,9 +9561,9 @@ var _user$project$Model$Song = F3(
 	function (a, b, c) {
 		return {name: a, album: b, artist: c};
 	});
-var _user$project$Model$SpotifyPlaylist = F4(
-	function (a, b, c, d) {
-		return {id: a, name: b, owner: c, songs: d};
+var _user$project$Model$SpotifyPlaylist = F5(
+	function (a, b, c, d, e) {
+		return {id: a, name: b, owner: c, songs: d, image: e};
 	});
 var _user$project$Model$LoggedIn = function (a) {
 	return {ctor: 'LoggedIn', _0: a};
@@ -9635,31 +9635,32 @@ var _user$project$Spotify$decodePlaylistTracks = function (l) {
 			'items',
 			_elm_lang$core$Json_Decode$list(_user$project$Spotify$decodeTrack)));
 };
-var _user$project$Spotify$decodePlaylist = A2(
-	_elm_lang$core$Json_Decode$map,
-	function (_p1) {
-		var _p2 = _p1;
-		return {
-			id: _p2._0,
-			name: _p2._1,
-			owner: _p2._2,
-			songs: _elm_lang$core$Native_List.fromArray(
-				[])
-		};
-	},
-	A4(
-		_elm_lang$core$Json_Decode$object3,
-		F3(
-			function (v0, v1, v2) {
-				return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
-			}),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+var _user$project$Spotify$decodePlaylist = A6(
+	_elm_lang$core$Json_Decode$object5,
+	_user$project$Model$SpotifyPlaylist,
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode$at,
+		_elm_lang$core$Native_List.fromArray(
+			['owner', 'id']),
+		_elm_lang$core$Json_Decode$string),
+	_elm_lang$core$Json_Decode$succeed(
+		_elm_lang$core$Native_List.fromArray(
+			[])),
+	A2(
+		_elm_lang$core$Json_Decode$map,
+		function (_p1) {
+			return A2(
+				_elm_lang$core$Maybe$withDefault,
+				'',
+				_elm_lang$core$List$head(_p1));
+		},
 		A2(
-			_elm_lang$core$Json_Decode$at,
-			_elm_lang$core$Native_List.fromArray(
-				['owner', 'id']),
-			_elm_lang$core$Json_Decode$string)));
+			_elm_lang$core$Json_Decode_ops[':='],
+			'images',
+			_elm_lang$core$Json_Decode$list(
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'url', _elm_lang$core$Json_Decode$string)))));
 var _user$project$Spotify$decodePlaylists = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$Model$SpotifyPlaylists,
@@ -9745,8 +9746,8 @@ var _user$project$Spotify$fetchListDetails = F2(
 	});
 var _user$project$Spotify$fetchListsDetails = F2(
 	function (token, data) {
-		var _p3 = data;
-		if (_p3.ctor === 'SpotifyPlaylists') {
+		var _p2 = data;
+		if (_p2.ctor === 'SpotifyPlaylists') {
 			return A2(
 				_elm_lang$core$Task$map,
 				_user$project$Model$SpotifyPlaylists,
@@ -9754,28 +9755,28 @@ var _user$project$Spotify$fetchListsDetails = F2(
 					A2(
 						_elm_lang$core$List$map,
 						_user$project$Spotify$fetchListDetails(token),
-						_p3._0)));
+						_p2._0)));
 		} else {
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Spotify',
 				{
-					start: {line: 96, column: 5},
-					end: {line: 98, column: 36}
+					start: {line: 98, column: 5},
+					end: {line: 100, column: 36}
 				},
-				_p3)('no lists');
+				_p2)('no lists');
 		}
 	});
 var _user$project$Spotify$getPlaylistTracks = F2(
 	function (token, l) {
 		return A3(
 			_elm_lang$core$Task$perform,
+			function (_p4) {
+				return _user$project$Model$ReceiveTracks(
+					_elm_lang$core$Result$Err(_p4));
+			},
 			function (_p5) {
 				return _user$project$Model$ReceiveTracks(
-					_elm_lang$core$Result$Err(_p5));
-			},
-			function (_p6) {
-				return _user$project$Model$ReceiveTracks(
-					_elm_lang$core$Result$Ok(_p6));
+					_elm_lang$core$Result$Ok(_p5));
 			},
 			A2(_user$project$Spotify$fetchListDetails, token, l));
 	});
@@ -9809,7 +9810,402 @@ var _user$project$Spotify$playlistId = function (playlist) {
 		A2(_elm_lang$core$Basics_ops['++'], '/', playlist.id));
 };
 
-var _user$project$Main$viewSong = function (s) {
+var _user$project$Views$footerView = A2(
+	_elm_lang$html$Html$footer,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('container')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('row')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('col-md-4')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(
+									_elm_lang$html$Html$span,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('copyright')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html$text('Copyright © Your Website 2016')
+										]))
+								])),
+							A2(
+							_elm_lang$html$Html$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('col-md-4')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(
+									_elm_lang$html$Html$ul,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('list-inline social-buttons')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											A2(
+											_elm_lang$html$Html$li,
+											_elm_lang$core$Native_List.fromArray(
+												[]),
+											_elm_lang$core$Native_List.fromArray(
+												[
+													A2(
+													_elm_lang$html$Html$a,
+													_elm_lang$core$Native_List.fromArray(
+														[
+															_elm_lang$html$Html_Attributes$href('#')
+														]),
+													_elm_lang$core$Native_List.fromArray(
+														[
+															A2(
+															_elm_lang$html$Html$i,
+															_elm_lang$core$Native_List.fromArray(
+																[
+																	_elm_lang$html$Html_Attributes$class('fa fa-twitter')
+																]),
+															_elm_lang$core$Native_List.fromArray(
+																[]))
+														]))
+												])),
+											A2(
+											_elm_lang$html$Html$li,
+											_elm_lang$core$Native_List.fromArray(
+												[]),
+											_elm_lang$core$Native_List.fromArray(
+												[
+													A2(
+													_elm_lang$html$Html$a,
+													_elm_lang$core$Native_List.fromArray(
+														[
+															_elm_lang$html$Html_Attributes$href('#')
+														]),
+													_elm_lang$core$Native_List.fromArray(
+														[
+															A2(
+															_elm_lang$html$Html$i,
+															_elm_lang$core$Native_List.fromArray(
+																[
+																	_elm_lang$html$Html_Attributes$class('fa fa-facebook')
+																]),
+															_elm_lang$core$Native_List.fromArray(
+																[]))
+														]))
+												])),
+											A2(
+											_elm_lang$html$Html$li,
+											_elm_lang$core$Native_List.fromArray(
+												[]),
+											_elm_lang$core$Native_List.fromArray(
+												[
+													A2(
+													_elm_lang$html$Html$a,
+													_elm_lang$core$Native_List.fromArray(
+														[
+															_elm_lang$html$Html_Attributes$href('#')
+														]),
+													_elm_lang$core$Native_List.fromArray(
+														[
+															A2(
+															_elm_lang$html$Html$i,
+															_elm_lang$core$Native_List.fromArray(
+																[
+																	_elm_lang$html$Html_Attributes$class('fa fa-linkedin')
+																]),
+															_elm_lang$core$Native_List.fromArray(
+																[]))
+														]))
+												]))
+										]))
+								])),
+							A2(
+							_elm_lang$html$Html$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('col-md-4')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(
+									_elm_lang$html$Html$ul,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('list-inline quicklinks')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											A2(
+											_elm_lang$html$Html$li,
+											_elm_lang$core$Native_List.fromArray(
+												[]),
+											_elm_lang$core$Native_List.fromArray(
+												[
+													A2(
+													_elm_lang$html$Html$a,
+													_elm_lang$core$Native_List.fromArray(
+														[
+															_elm_lang$html$Html_Attributes$href('#')
+														]),
+													_elm_lang$core$Native_List.fromArray(
+														[
+															_elm_lang$html$Html$text('Privacy Policy')
+														]))
+												])),
+											A2(
+											_elm_lang$html$Html$li,
+											_elm_lang$core$Native_List.fromArray(
+												[]),
+											_elm_lang$core$Native_List.fromArray(
+												[
+													A2(
+													_elm_lang$html$Html$a,
+													_elm_lang$core$Native_List.fromArray(
+														[
+															_elm_lang$html$Html_Attributes$href('#')
+														]),
+													_elm_lang$core$Native_List.fromArray(
+														[
+															_elm_lang$html$Html$text('Terms of Use')
+														]))
+												]))
+										]))
+								]))
+						]))
+				]))
+		]));
+var _user$project$Views$headerView = function (model) {
+	return A2(
+		_elm_lang$html$Html$header,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('container')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('intro-text')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$div,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$class('intro-lead-in')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('Welcome To Our Studio!')
+									])),
+								A2(
+								_elm_lang$html$Html$div,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$class('intro-heading')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('It\'s Nice To Meet You')
+									])),
+								A2(
+								_elm_lang$html$Html$a,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$class('page-scroll btn btn-xl'),
+										_elm_lang$html$Html_Attributes$href('#services')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('Tell Me More')
+									]))
+							]))
+					]))
+			]));
+};
+var _user$project$Views$viewPlaylist = function (playlist) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('col-md-4 col-sm-6 portfolio-item')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$a,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('portfolio-link'),
+						A2(_elm_lang$html$Html_Attributes$attribute, 'data-toggle', 'modal'),
+						_elm_lang$html$Html_Attributes$href('#portfolioModal1')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('portfolio-hover')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$div,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$class('portfolio-hover-content')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										A2(
+										_elm_lang$html$Html$i,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Attributes$class('fa fa-plus fa-3x')
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[]))
+									]))
+							])),
+						A2(
+						_elm_lang$html$Html$img,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$alt(''),
+								_elm_lang$html$Html_Attributes$class('img-responsive'),
+								_elm_lang$html$Html_Attributes$src(playlist.image)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('portfolio-caption')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$h4,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text(playlist.name)
+							])),
+						A2(
+						_elm_lang$html$Html$p,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('text-muted')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text(playlist.owner)
+							]))
+					]))
+			]));
+};
+var _user$project$Views$viewPlayLists = function (playlists) {
+	return A2(
+		_elm_lang$html$Html$section,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('bg-light-gray'),
+				_elm_lang$html$Html_Attributes$id('portfolio')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('container')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('row')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$div,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$class('col-lg-12 text-center')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										A2(
+										_elm_lang$html$Html$h2,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Attributes$class('section-heading')
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html$text('Playlists')
+											])),
+										A2(
+										_elm_lang$html$Html$h3,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Attributes$class('section-subheading text-muted')
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html$text('Public and private')
+											]))
+									]))
+							])),
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('row')
+							]),
+						A2(_elm_lang$core$List$map, _user$project$Views$viewPlaylist, playlists))
+					]))
+			]));
+};
+var _user$project$Views$viewSong = function (s) {
 	return A2(
 		_elm_lang$html$Html$li,
 		_elm_lang$core$Native_List.fromArray(
@@ -9821,92 +10217,128 @@ var _user$project$Main$viewSong = function (s) {
 				_elm_lang$html$Html$text(s.artist)
 			]));
 };
-var _user$project$Main$viewPlaylist = function (p) {
-	return A2(
-		_elm_lang$html$Html$li,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html_Attributes$class('playlist'),
-				A2(
-				_elm_lang$html$Html_Attributes$attribute,
-				'data-disqus-identifier',
-				_user$project$Spotify$playlistId(p))
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text(p.name),
-				_elm_lang$html$Html$text(p.owner),
-				A2(
-				_elm_lang$html$Html$ul,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				A2(_elm_lang$core$List$map, _user$project$Main$viewSong, p.songs)),
-				A2(
-				_elm_lang$html$Html$button,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Events$onClick(
-						_user$project$Model$LoadPlaylist(p))
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('load')
-					])),
-				A2(
-				_elm_lang$html$Html$button,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Events$onClick(
-						_user$project$Model$LoadPlaylistComments(p))
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('comments')
-					]))
-			]));
-};
-var _user$project$Main$userProfile = function (user) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text(user.name),
-				A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				A2(
-					_elm_lang$core$List$map,
-					function (x) {
-						return A2(
-							_elm_lang$html$Html$img,
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_elm_lang$html$Html_Attributes$src(x)
-								]),
-							_elm_lang$core$Native_List.fromArray(
-								[]));
-					},
-					user.photo))
-			]));
-};
-var _user$project$Main$spotifyLoginView = A2(
+var _user$project$Views$spotifyLoginView = A2(
 	_elm_lang$html$Html$button,
 	_elm_lang$core$Native_List.fromArray(
 		[
-			_elm_lang$html$Html_Events$onClick(_user$project$Model$StartSpotifyLogin)
+			_elm_lang$html$Html_Events$onClick(_user$project$Model$StartSpotifyLogin),
+			_elm_lang$html$Html_Attributes$class('btn btn-primary navbar-btn')
 		]),
 	_elm_lang$core$Native_List.fromArray(
 		[
 			_elm_lang$html$Html$text('Log to spotify')
 		]));
-var _user$project$Main$view = function (model) {
+var _user$project$Views$userProfile = function (model) {
 	var _p0 = model.state;
-	switch (_p0.ctor) {
+	if ((_p0.ctor === 'LoggedIn') && (_p0._0.ctor === '_Tuple3')) {
+		var _p1 = _p0._0._1;
+		var imgSrc = A2(
+			_elm_lang$core$Maybe$withDefault,
+			'',
+			_elm_lang$core$List$head(_p1.photo));
+		return A2(
+			_elm_lang$html$Html$li,
+			_elm_lang$core$Native_List.fromArray(
+				[]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$p,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('navbar-text')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$img,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$src(imgSrc),
+									_elm_lang$html$Html_Attributes$class('img-circle'),
+									_elm_lang$html$Html_Attributes$width(30)
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[])),
+							_elm_lang$html$Html$text(_p1.name)
+						]))
+				]));
+	} else {
+		return _user$project$Views$spotifyLoginView;
+	}
+};
+var _user$project$Views$spotifyBigLoginView = A2(
+	_elm_lang$html$Html$section,
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$html$Html_Attributes$class('bg-light-gray'),
+			_elm_lang$html$Html_Attributes$id('team')
+		]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('container')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('row')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('col-lg-12 text-center')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(
+									_elm_lang$html$Html$h2,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('section-heading')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html$text('Our Amazing Team')
+										])),
+									A2(
+									_elm_lang$html$Html$h3,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('section-subheading text-muted')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											A2(
+											_elm_lang$html$Html$button,
+											_elm_lang$core$Native_List.fromArray(
+												[
+													_elm_lang$html$Html_Events$onClick(_user$project$Model$StartSpotifyLogin),
+													_elm_lang$html$Html_Attributes$class('btn btn-primary btn-lg btn-block')
+												]),
+											_elm_lang$core$Native_List.fromArray(
+												[
+													_elm_lang$html$Html$text('Log to spotify')
+												]))
+										]))
+								]))
+						]))
+				]))
+		]));
+var _user$project$Views$content = function (model) {
+	var _p2 = model.state;
+	switch (_p2.ctor) {
 		case 'Unlogged':
-			return _user$project$Main$spotifyLoginView;
+			return _user$project$Views$spotifyBigLoginView;
 		case 'GotToken':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -9916,61 +10348,196 @@ var _user$project$Main$view = function (model) {
 					[
 						_elm_lang$html$Html$text(
 						_elm_lang$core$Basics$toString(model)),
-						_elm_lang$html$Html$text(_p0._0)
+						_elm_lang$html$Html$text(_p2._0)
 					]));
 		default:
-			return A2(
+			return _user$project$Views$viewPlayLists(_p2._0._2);
+	}
+};
+var _user$project$Views$navView = function (model) {
+	return A2(
+		_elm_lang$html$Html$nav,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('navbar navbar-default navbar-custom navbar-fixed-top'),
+				_elm_lang$html$Html_Attributes$id('mainNav')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
-					[]),
+					[
+						_elm_lang$html$Html_Attributes$class('container')
+					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A2(
 						_elm_lang$html$Html$div,
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$html$Html_Attributes$id('disqussions_wrapper')
+								_elm_lang$html$Html_Attributes$class('navbar-header page-scroll')
 							]),
-						_elm_lang$core$Native_List.fromArray(
-							[])),
-						A2(
-						_elm_lang$html$Html$ul,
-						_elm_lang$core$Native_List.fromArray(
-							[]),
 						_elm_lang$core$Native_List.fromArray(
 							[
 								A2(
-								_elm_lang$html$Html$li,
-								_elm_lang$core$Native_List.fromArray(
-									[]),
+								_elm_lang$html$Html$button,
 								_elm_lang$core$Native_List.fromArray(
 									[
-										_elm_lang$html$Html$text(_p0._0._0)
+										_elm_lang$html$Html_Attributes$class('navbar-toggle'),
+										A2(_elm_lang$html$Html_Attributes$attribute, 'data-target', '#bs-example-navbar-collapse-1'),
+										A2(_elm_lang$html$Html_Attributes$attribute, 'data-toggle', 'collapse'),
+										_elm_lang$html$Html_Attributes$type$('button')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										A2(
+										_elm_lang$html$Html$span,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Attributes$class('sr-only')
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html$text('Toggle navigation')
+											])),
+										_elm_lang$html$Html$text('Menu '),
+										A2(
+										_elm_lang$html$Html$i,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Attributes$class('fa fa-bars')
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[]))
 									])),
 								A2(
-								_elm_lang$html$Html$li,
-								_elm_lang$core$Native_List.fromArray(
-									[]),
+								_elm_lang$html$Html$a,
 								_elm_lang$core$Native_List.fromArray(
 									[
-										_user$project$Main$userProfile(_p0._0._1)
+										_elm_lang$html$Html_Attributes$class('navbar-brand page-scroll'),
+										_elm_lang$html$Html_Attributes$href('#page-top')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('Start Bootstrap')
 									]))
 							])),
 						A2(
-						_elm_lang$html$Html$ul,
+						_elm_lang$html$Html$div,
 						_elm_lang$core$Native_List.fromArray(
-							[]),
-						A2(_elm_lang$core$List$map, _user$project$Main$viewPlaylist, _p0._0._2))
-					]));
-	}
+							[
+								_elm_lang$html$Html_Attributes$class('collapse navbar-collapse'),
+								_elm_lang$html$Html_Attributes$id('bs-example-navbar-collapse-1')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$ul,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$class('nav navbar-nav navbar-right')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										A2(
+										_elm_lang$html$Html$li,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Attributes$class('hidden')
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												A2(
+												_elm_lang$html$Html$a,
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html_Attributes$href('#page-top')
+													]),
+												_elm_lang$core$Native_List.fromArray(
+													[]))
+											])),
+										A2(
+										_elm_lang$html$Html$li,
+										_elm_lang$core$Native_List.fromArray(
+											[]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												A2(
+												_elm_lang$html$Html$a,
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html_Attributes$class('page-scroll'),
+														_elm_lang$html$Html_Attributes$href('#services')
+													]),
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html$text('Services')
+													]))
+											])),
+										A2(
+										_elm_lang$html$Html$li,
+										_elm_lang$core$Native_List.fromArray(
+											[]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												A2(
+												_elm_lang$html$Html$a,
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html_Attributes$class('page-scroll'),
+														_elm_lang$html$Html_Attributes$href('#portfolio')
+													]),
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html$text('Portfolio')
+													]))
+											])),
+										A2(
+										_elm_lang$html$Html$li,
+										_elm_lang$core$Native_List.fromArray(
+											[]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												A2(
+												_elm_lang$html$Html$a,
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html_Attributes$class('page-scroll'),
+														_elm_lang$html$Html_Attributes$href('#contact')
+													]),
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html$text('Contact')
+													]))
+											])),
+										_user$project$Views$userProfile(model)
+									]))
+							]))
+					]))
+			]));
 };
+var _user$project$Views$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_user$project$Views$navView(model),
+				_user$project$Views$headerView(model),
+				_user$project$Views$content(model),
+				_user$project$Views$footerView
+			]));
+};
+
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$Main$urlUpdate = F2(
 	function (result, model) {
-		var _p1 = A2(_elm_lang$core$Debug$log, 'urlUpdate', result);
-		if (_p1.ctor === 'Ok') {
+		var _p0 = A2(_elm_lang$core$Debug$log, 'urlUpdate', result);
+		if (_p0.ctor === 'Ok') {
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		} else {
 			return {
@@ -9982,20 +10549,20 @@ var _user$project$Main$urlUpdate = F2(
 	});
 var _user$project$Main$init = F2(
 	function (flags, r) {
-		var _p2 = A2(_elm_lang$core$Debug$log, 'init', r);
-		if ((_p2.ctor === 'Ok') && (_p2._0.ctor === 'LoginResult')) {
-			var _p3 = _p2._0._0;
+		var _p1 = A2(_elm_lang$core$Debug$log, 'init', r);
+		if ((_p1.ctor === 'Ok') && (_p1._0.ctor === 'LoginResult')) {
+			var _p2 = _p1._0._0;
 			return {
 				ctor: '_Tuple2',
 				_0: {
 					flags: flags,
-					state: _user$project$Model$GotToken(_p3.token)
+					state: _user$project$Model$GotToken(_p2.token)
 				},
 				_1: _elm_lang$core$Platform_Cmd$batch(
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_user$project$Spotify$getUserInfo(_p3.token),
-							_user$project$Spotify$getPlaylists(_p3.token)
+							_user$project$Spotify$getUserInfo(_p2.token),
+							_user$project$Spotify$getPlaylists(_p2.token)
 						]))
 			};
 		} else {
@@ -10026,7 +10593,8 @@ var _user$project$Main$loadComments = _elm_lang$core$Native_Platform.outgoingPor
 			songs: _elm_lang$core$Native_List.toArray(v.songs).map(
 				function (v) {
 					return {name: v.name, album: v.album, artist: v.artist};
-				})
+				}),
+			image: v.image
 		};
 	});
 var _user$project$Main$playlistsLoaded = _elm_lang$core$Native_Platform.outgoingPort(
@@ -10036,8 +10604,8 @@ var _user$project$Main$playlistsLoaded = _elm_lang$core$Native_Platform.outgoing
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p4 = A2(_elm_lang$core$Debug$log, 'update', msg);
-		switch (_p4.ctor) {
+		var _p3 = A2(_elm_lang$core$Debug$log, 'update', msg);
+		switch (_p3.ctor) {
 			case 'StartSpotifyLogin':
 				return {
 					ctor: '_Tuple2',
@@ -10046,7 +10614,7 @@ var _user$project$Main$update = F2(
 						_user$project$Spotify$loginUrl(model.flags.location))
 				};
 			case 'SpotifyResponse':
-				switch (_p4._0._1.ctor) {
+				switch (_p3._0._1.ctor) {
 					case 'SpotifyUser':
 						return {
 							ctor: '_Tuple2',
@@ -10056,8 +10624,8 @@ var _user$project$Main$update = F2(
 									state: _user$project$Model$LoggedIn(
 										{
 											ctor: '_Tuple3',
-											_0: _p4._0._0,
-											_1: _p4._0._1._0,
+											_0: _p3._0._0,
+											_1: _p3._0._1._0,
 											_2: _elm_lang$core$Native_List.fromArray(
 												[])
 										})
@@ -10065,15 +10633,15 @@ var _user$project$Main$update = F2(
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					case 'SpotifyPlaylists':
-						var _p5 = model.state;
-						if ((_p5.ctor === 'LoggedIn') && (_p5._0.ctor === '_Tuple3')) {
+						var _p4 = model.state;
+						if ((_p4.ctor === 'LoggedIn') && (_p4._0.ctor === '_Tuple3')) {
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
 									model,
 									{
 										state: _user$project$Model$LoggedIn(
-											{ctor: '_Tuple3', _0: _p5._0._0, _1: _p5._0._1, _2: _p4._0._1._0})
+											{ctor: '_Tuple3', _0: _p4._0._0, _1: _p4._0._1, _2: _p3._0._1._0})
 									}),
 								_1: _user$project$Main$playlistsLoaded('')
 							};
@@ -10081,16 +10649,16 @@ var _user$project$Main$update = F2(
 							return _elm_lang$core$Native_Utils.crashCase(
 								'Main',
 								{
-									start: {line: 126, column: 7},
-									end: {line: 131, column: 48}
+									start: {line: 124, column: 7},
+									end: {line: 129, column: 48}
 								},
-								_p5)(
+								_p4)(
 								_elm_lang$core$Basics$toString(
 									{ctor: '_Tuple2', _0: model, _1: msg}));
 						}
 					default:
-						var _p7 = _p4._0._1._0;
-						if ((_p7.ctor === 'BadResponse') && (_p7._0 === 401)) {
+						var _p6 = _p3._0._1._0;
+						if ((_p6.ctor === 'BadResponse') && (_p6._0 === 401)) {
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
@@ -10103,55 +10671,55 @@ var _user$project$Main$update = F2(
 							return _elm_lang$core$Native_Utils.crashCase(
 								'Main',
 								{
-									start: {line: 135, column: 7},
-									end: {line: 140, column: 40}
+									start: {line: 133, column: 7},
+									end: {line: 138, column: 40}
 								},
-								_p7)(
+								_p6)(
 								_elm_lang$core$Basics$toString(msg));
 						}
 				}
 			case 'LoadPlaylist':
-				var _p9 = model.state;
-				if ((_p9.ctor === 'LoggedIn') && (_p9._0.ctor === '_Tuple3')) {
-					var _p10 = _p9._0._0;
+				var _p8 = model.state;
+				if ((_p8.ctor === 'LoggedIn') && (_p8._0.ctor === '_Tuple3')) {
+					var _p9 = _p8._0._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
 								state: _user$project$Model$LoggedIn(
-									{ctor: '_Tuple3', _0: _p10, _1: _p9._0._1, _2: _p9._0._2})
+									{ctor: '_Tuple3', _0: _p9, _1: _p8._0._1, _2: _p8._0._2})
 							}),
-						_1: A2(_user$project$Spotify$getPlaylistTracks, _p10, _p4._0)
+						_1: A2(_user$project$Spotify$getPlaylistTracks, _p9, _p3._0)
 					};
 				} else {
 					return _elm_lang$core$Native_Utils.crashCase(
 						'Main',
 						{
-							start: {line: 143, column: 7},
-							end: {line: 148, column: 48}
+							start: {line: 141, column: 7},
+							end: {line: 146, column: 48}
 						},
-						_p9)(
+						_p8)(
 						_elm_lang$core$Basics$toString(
 							{ctor: '_Tuple2', _0: model, _1: msg}));
 				}
 			case 'ReceiveTracks':
-				var _p12 = {ctor: '_Tuple2', _0: _p4._0, _1: model.state};
-				if ((((_p12.ctor === '_Tuple2') && (_p12._0.ctor === 'Ok')) && (_p12._1.ctor === 'LoggedIn')) && (_p12._1._0.ctor === '_Tuple3')) {
-					var _p13 = _p12._0._0;
+				var _p11 = {ctor: '_Tuple2', _0: _p3._0, _1: model.state};
+				if ((((_p11.ctor === '_Tuple2') && (_p11._0.ctor === 'Ok')) && (_p11._1.ctor === 'LoggedIn')) && (_p11._1._0.ctor === '_Tuple3')) {
+					var _p12 = _p11._0._0;
 					var dd = A2(
 						_elm_lang$core$List$map,
 						function (p) {
-							return _elm_lang$core$Native_Utils.eq(p.id, _p13.id) ? _p13 : p;
+							return _elm_lang$core$Native_Utils.eq(p.id, _p12.id) ? _p12 : p;
 						},
-						_p12._1._0._2);
+						_p11._1._0._2);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
 								state: _user$project$Model$LoggedIn(
-									{ctor: '_Tuple3', _0: _p12._1._0._0, _1: _p12._1._0._1, _2: dd})
+									{ctor: '_Tuple3', _0: _p11._1._0._0, _1: _p11._1._0._1, _2: dd})
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -10159,10 +10727,10 @@ var _user$project$Main$update = F2(
 					return _elm_lang$core$Native_Utils.crashCase(
 						'Main',
 						{
-							start: {line: 151, column: 7},
-							end: {line: 157, column: 48}
+							start: {line: 149, column: 7},
+							end: {line: 155, column: 48}
 						},
-						_p12)(
+						_p11)(
 						_elm_lang$core$Basics$toString(
 							{ctor: '_Tuple2', _0: model, _1: msg}));
 				}
@@ -10170,7 +10738,7 @@ var _user$project$Main$update = F2(
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _user$project$Main$loadComments(_p4._0)
+					_1: _user$project$Main$loadComments(_p3._0)
 				};
 		}
 	});
@@ -10209,24 +10777,24 @@ var _user$project$Main$pageParser = function () {
 			_elm_lang$core$Basics$flip,
 			_elm_lang$core$Result$andThen,
 			function (l) {
-				var _p15 = l;
-				if ((((_p15.ctor === '::') && (_p15._1.ctor === '::')) && (_p15._1._1.ctor === '::')) && (_p15._1._1._1.ctor === '[]')) {
+				var _p14 = l;
+				if ((((_p14.ctor === '::') && (_p14._1.ctor === '::')) && (_p14._1._1.ctor === '::')) && (_p14._1._1._1.ctor === '[]')) {
 					return _elm_lang$core$Result$Ok(
 						_user$project$Main$LoginResult(
-							{token: _p15._0, tokenType: _p15._1._0, expiration: _p15._1._1._0}));
+							{token: _p14._0, tokenType: _p14._1._0, expiration: _p14._1._1._0}));
 				} else {
 					return _elm_lang$core$Result$Err('Struct');
 				}
 			},
 			A2(
 				_elm_lang$core$Result$map,
-				function (_p16) {
+				function (_p15) {
 					return A2(
 						_elm_lang$core$List$filterMap,
 						_elm_lang$core$Basics$identity,
 						function (_) {
 							return _.submatches;
-						}(_p16));
+						}(_p15));
 				},
 				A2(
 					_elm_lang$core$Result$fromMaybe,
@@ -10255,17 +10823,17 @@ var _user$project$Main$fromUrl = function (url) {
 		url);
 };
 var _user$project$Main$urlParser = _elm_lang$navigation$Navigation$makeParser(
-	function (_p17) {
+	function (_p16) {
 		return _user$project$Main$fromUrl(
 			function (_) {
 				return _.hash;
-			}(_p17));
+			}(_p16));
 	});
 var _user$project$Main$main = {
 	main: A2(
 		_elm_lang$navigation$Navigation$programWithFlags,
 		_user$project$Main$urlParser,
-		{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, urlUpdate: _user$project$Main$urlUpdate, subscriptions: _user$project$Main$subscriptions}),
+		{init: _user$project$Main$init, view: _user$project$Views$view, update: _user$project$Main$update, urlUpdate: _user$project$Main$urlUpdate, subscriptions: _user$project$Main$subscriptions}),
 	flags: A2(
 		_elm_lang$core$Json_Decode$andThen,
 		A2(_elm_lang$core$Json_Decode_ops[':='], 'location', _elm_lang$core$Json_Decode$string),
