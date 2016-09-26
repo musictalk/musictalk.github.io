@@ -4,8 +4,6 @@ import Html exposing (..)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (class, id, attribute, href, type', src, width, height, alt)
 import Model exposing (..)
-import Spotify
-
 
 navView : Model -> Html Msg
 navView model =
@@ -38,21 +36,33 @@ navView model =
 spotifyBigLoginView : Html Msg
 spotifyBigLoginView =
     section [ class "bg-light-gray", id "team" ]
-        [ div [ class "container" ]
+        -- [ div [ class "container" ]
+        --       [
+        --           div [ class "jumbotron"]
+        --               [ h1 [] [ text "connect to spotify"]
+        --               , p [] [ text "connect to spotify" ]
+        --               , button
+        --                     [ onClick StartSpotifyLogin
+        --                     , class "btn btn-primary btn-lg btn-block"
+        --                     ]
+        --                     [ text "Log to spotify" ]
+        --               ]
+        --       ]
             [ div [ class "row" ]
                 [ div [ class "col-lg-12 text-center" ]
                     [ h2 [ class "section-heading" ]
-                        [ text "Our Amazing Team" ]
+                        [ text "Connect to Spotify" ]
+                    , p [] [ text "Link your account to display your playlists" ]
                     , h3 [ class "section-subheading text-muted" ]
                         [ button
                             [ onClick StartSpotifyLogin
-                            , class "btn btn-primary btn-lg btn-block"
+                            , class "btn btn-primary btn-lg"
                             ]
-                            [ text "Log to spotify" ]
+                            [ text "Login" ]
                         ]
                     ]
                 ]
-            ]
+            -- ]
         ]
 
 
@@ -60,15 +70,15 @@ spotifyLoginView : Html Msg
 spotifyLoginView =
     button
         [ onClick StartSpotifyLogin
-        , class "btn btn-primary navbar-btn"
+        , class "btn navbar-btn"
         ]
-        [ text "Log to spotify" ]
+        [ text "Not connected" ]
 
 
 userProfile : Model -> Html Msg
 userProfile model =
     case model.state of
-        LoggedIn ( token, user, playlists ) ->
+        LoggedIn ( token, Just user, playlists ) ->
             let
                 imgSrc =
                     List.head user.photo |> Maybe.withDefault ""
@@ -97,7 +107,7 @@ viewSong s =
 viewPlaylist : SpotifyPlaylist -> Html Msg
 viewPlaylist playlist =
     div [ class "col-md-4 col-sm-6 portfolio-item" ]
-        [ a [ class "portfolio-link", attribute "data-toggle" "modal", href "#portfolioModal1" ]
+        [ a [ class "portfolio-link", href <| "#!/user/"++playlist.owner++"/playlist/" ++ playlist.id ]
             [ div [ class "portfolio-hover" ]
                 [ div [ class "portfolio-hover-content" ]
                     [ i [ class "fa fa-plus fa-3x" ]
@@ -155,12 +165,12 @@ headerView model =
     header []
         [ div [ class "container" ]
             [ div [ class "intro-text" ]
-                [ div [ class "intro-lead-in" ]
-                    [ text "Welcome To Our Studio!" ]
-                , div [ class "intro-heading" ]
-                    [ text "It's Nice To Meet You" ]
-                , a [ class "page-scroll btn btn-xl", href "#services" ]
-                    [ text "Tell Me More" ]
+                [ div [ class "intro-heading" ]
+                    [ text "discuss playlists" ]
+                , div [ class "intro-lead-in" ]
+                    [ text "(and why they're wrong)" ]
+                -- , a [ class "page-scroll btn btn-xl", href "#services" ]
+                --     [ text "Tell Me More" ]
                 ]
             ]
         ]
@@ -196,42 +206,42 @@ footerView =
             [ div [ class "row" ]
                 [ div [ class "col-md-4" ]
                     [ span [ class "copyright" ]
-                        [ text "Copyright © Your Website 2016" ]
+                        [ text "Copyright © musictalk 2016" ]
                     ]
                 , div [ class "col-md-4" ]
                     [ ul [ class "list-inline social-buttons" ]
                         [ li []
-                            [ a [ href "#" ]
-                                [ i [ class "fa fa-twitter" ]
+                            [ a [ href "https://github.com/theor" ]
+                                [ i [ class "fa fa-github" ]
                                     []
                                 ]
                             ]
-                        , li []
-                            [ a [ href "#" ]
-                                [ i [ class "fa fa-facebook" ]
-                                    []
-                                ]
-                            ]
-                        , li []
-                            [ a [ href "#" ]
-                                [ i [ class "fa fa-linkedin" ]
-                                    []
-                                ]
-                            ]
+                        -- , li []
+                        --     [ a [ href "#" ]
+                        --         [ i [ class "fa fa-facebook" ]
+                        --             []
+                        --         ]
+                        --     ]
+                        -- , li []
+                        --     [ a [ href "#" ]
+                        --         [ i [ class "fa fa-linkedin" ]
+                        --             []
+                        --         ]
+                        --     ]
                         ]
                     ]
-                , div [ class "col-md-4" ]
-                    [ ul [ class "list-inline quicklinks" ]
-                        [ li []
-                            [ a [ href "#" ]
-                                [ text "Privacy Policy" ]
-                            ]
-                        , li []
-                            [ a [ href "#" ]
-                                [ text "Terms of Use" ]
-                            ]
-                        ]
-                    ]
+                -- , div [ class "col-md-4" ]
+                --     [ ul [ class "list-inline quicklinks" ]
+                --         [ li []
+                --             [ a [ href "#" ]
+                --                 [ text "Privacy Policy" ]
+                --             ]
+                --         , li []
+                --             [ a [ href "#" ]
+                --                 [ text "Terms of Use" ]
+                --             ]
+                --         ]
+                --     ]
                 ]
             ]
         ]

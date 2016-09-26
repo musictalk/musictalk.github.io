@@ -23,7 +23,9 @@ main =
 port redirect : String -> Cmd msg
 port loadComments : SpotifyPlaylist -> Cmd msg
 port playlistsLoaded : String -> Cmd msg
-
+port storeToken : String -> Cmd msg
+port queryToken : () -> Cmd msg
+port answerToken : (String -> msg) -> Sub msg
 
 -- MODEL
 
@@ -33,15 +35,15 @@ init : Flags -> Result String Routing.Page -> (Model, Cmd Msg)
 init flags r =
   case Debug.log "init" r of
     Ok (Routing.LoginResult r) ->
-      ( {flags = flags, state = GotToken r.token }
-      , Cmd.batch[ Spotify.getUserInfo r.token, Spotify.getPlaylists r.token ]
-      )
+      {flags = flags, state = GotToken r.token }
+        ! [ storeToken r.token, Spotify.getUserInfo r.token, Spotify.getPlaylists r.token ]
+    Ok (Routing.Index) -> { flags = flags, state = Unlogged} ! [ queryToken () ]
     _ -> Routing.urlUpdate r  {flags = flags, state = Unlogged }
 
 -- SUBS
 
 subscriptions: Model -> Sub Msg
-subscriptions model = Sub.none
+subscriptions model = answerToken QueryCachedToken
 
 
 -- UPDATE
@@ -50,18 +52,20 @@ subscriptions model = Sub.none
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  
+  let _ = Debug.log "model" model in
   case Debug.log "update" msg of
     StartSpotifyLogin -> (model, redirect <| Spotify.loginUrl model.flags.location)
   
-    SpotifyResponse (token, SpotifyUser data) ->
-      ( {model | state = LoggedIn (token, data, []) }
+    QueryCachedToken token -> {flags = model.flags, state = GotToken token } ! [ Spotify.getUserInfo token, Spotify.getPlaylists token ]
+
+    SpotifyResponse (token, SpotifyUser userData) ->
+      ( {model | state = LoggedIn (token, Just userData, []) }
       , Cmd.none
       )
 
     SpotifyResponse (token, SpotifyPlaylists data) ->
       case model.state of
-        GotToken r -> (model, Spotify.getUserInfo token)
+        GotToken r -> { model | state = LoggedIn(r, Nothing, data) } ! []-- [ Spotify.getUserInfo token, Spotify.getPlaylists r ]
         LoggedIn(t,u,_) ->
           ( {model | state = LoggedIn (t, u, data) }
           , playlistsLoaded ""
@@ -81,7 +85,7 @@ update msg model =
       case model.state of
         LoggedIn(t,u,d) ->
           ( {model | state = LoggedIn (t, u, d) }
-          , Spotify.getPlaylistTracks t p
+          , Spotify.getPlaylistTracks t p.owner p.id
           )
         _ -> Debug.crash (toString (model,msg))
 

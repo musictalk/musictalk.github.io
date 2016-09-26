@@ -7,7 +7,7 @@ type alias Flags = { location: Location }
 
 type ModelState = Unlogged
                 | GotToken SpotifyToken
-                | LoggedIn (SpotifyToken, SpotifyUserData, List SpotifyPlaylist)
+                | LoggedIn (SpotifyToken, Maybe SpotifyUserData, List SpotifyPlaylist)
 
 
 type alias Model =
@@ -38,6 +38,7 @@ type SpotifyData = SpotifyUser SpotifyUserData
 
 type Msg
   = StartSpotifyLogin
+  | QueryCachedToken SpotifyToken
   | SpotifyResponse (SpotifyToken, SpotifyData)
   | LoadPlaylist SpotifyPlaylist
   | ReceiveTracks (Result Http.Error SpotifyPlaylist)

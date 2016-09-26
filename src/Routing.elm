@@ -4,6 +4,7 @@ import Navigation
 import UrlParser exposing ((</>))
 import Regex
 import String
+import Spotify
 
 import Model exposing (..)
 
@@ -62,6 +63,7 @@ urlUpdate : Result String Page -> Model -> (Model, Cmd Msg)
 urlUpdate result model =
   case Debug.log "urlUpdate" result of
     -- Ok Index -> (model, redirect Spotify.loginUrl)
+    Ok (Playlist uid pid) -> model ! [Spotify.getPlaylistTracks "" uid pid]
     Ok newCount ->
       (model, Cmd.none)
 

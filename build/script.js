@@ -33,6 +33,20 @@ app.ports.playlistsLoaded.subscribe(function (x) {
 
 });
 
+
+app.ports.storeToken.subscribe(function (token) {
+    // console.log("token", token);
+    window.localStorage.setItem("token", token);
+     
+})
+
+app.ports.queryToken.subscribe(function () {
+    console.log("query token");
+    var t = window.localStorage.getItem("token");
+    if(t != null)
+        app.ports.answerToken.send(t);
+});
+
 var setup = function (_) {
     if ($('#mainNav').length == 0) {
         window.requestAnimationFrame(setup);
