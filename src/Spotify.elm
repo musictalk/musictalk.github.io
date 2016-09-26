@@ -41,6 +41,7 @@ get token decoder url =
     in
       Http.fromJson d (Http.send Http.defaultSettings request)
 
+performTask : SpotifyToken -> Task Error SpotifyData -> Cmd Msg
 performTask token = Task.perform (\x -> SpotifyResponse(token, SpotifyError x)) (\x -> SpotifyResponse(token, x))
 
 getSpotify : SpotifyToken -> Decoder a -> String -> Task Error a

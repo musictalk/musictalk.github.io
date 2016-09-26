@@ -17,6 +17,7 @@
         "isBuildCommand": true,
             "showOutput": "always",
             "args": [
+                "--yes",
                 "src\\Model.elm",
                 "src\\Main.elm",
                 "src\\Spotify.elm",

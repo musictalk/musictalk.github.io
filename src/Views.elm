@@ -20,26 +20,14 @@ navView model =
                         []
                     ]
                 , a [ class "navbar-brand page-scroll", href "#page-top" ]
-                    [ text "Start Bootstrap" ]
+                    [ text "musictalk" ]
                 ]
             , div [ class "collapse navbar-collapse", id "bs-example-navbar-collapse-1" ]
                 [ ul [ class "nav navbar-nav navbar-right" ]
                     [ li [ class "hidden" ]
-                        [ a [ href "#page-top" ]
-                            []
-                        ]
+                        [ a [ href "#page-top" ] [] ]
                     , li []
-                        [ a [ class "page-scroll", href "#services" ]
-                            [ text "Services" ]
-                        ]
-                    , li []
-                        [ a [ class "page-scroll", href "#portfolio" ]
-                            [ text "Portfolio" ]
-                        ]
-                    , li []
-                        [ a [ class "page-scroll", href "#contact" ]
-                            [ text "Contact" ]
-                        ]
+                        [ a [ class "page-scroll", href "#playlists" ] [ text "Playlists" ] ]
                     , userProfile model
                     ]
                 ]
@@ -56,17 +44,18 @@ spotifyBigLoginView =
                     [ h2 [ class "section-heading" ]
                         [ text "Our Amazing Team" ]
                     , h3 [ class "section-subheading text-muted" ]
-                        [ 
-    button
-        [ onClick StartSpotifyLogin
-        , class "btn btn-primary btn-lg btn-block"
-        ]
-        [ text "Log to spotify" ] ]
+                        [ button
+                            [ onClick StartSpotifyLogin
+                            , class "btn btn-primary btn-lg btn-block"
+                            ]
+                            [ text "Log to spotify" ]
+                        ]
                     ]
                 ]
             ]
         ]
-        
+
+
 spotifyLoginView : Html Msg
 spotifyLoginView =
     button
@@ -115,7 +104,8 @@ viewPlaylist playlist =
                         []
                     ]
                 ]
-            , img [ alt "", class "img-responsive", src playlist.image] --, width 360, height 360 ]
+            , img [ alt "", class "img-responsive", src playlist.image ]
+                --, width 360, height 360 ]
                 []
             ]
         , div [ class "portfolio-caption" ]
@@ -139,7 +129,13 @@ viewPlaylist playlist =
 
 viewPlayLists : List SpotifyPlaylist -> Html Msg
 viewPlayLists playlists =
-    section [ class "bg-light-gray", id "portfolio" ]
+    let mapPlaylist = \i p ->
+        List.concat [ [viewPlaylist p]
+                    , (if (i+1) % 3 == 0 then [ div [ class "clearfix visible-md-block visible-lg-block"] []] else [])
+                    , (if (i+1) % 2 == 0 then [ div [ class "clearfix visible-sm-block"] []] else [])
+                    ]
+    in
+    section [ class "bg-light-gray", id "playlists" ]
         [ div [ class "container" ]
             [ div [ class "row" ]
                 [ div [ class "col-lg-12 text-center" ]
@@ -149,9 +145,10 @@ viewPlayLists playlists =
                         [ text "Public and private" ]
                     ]
                 ]
-            , div [ class "row" ] (List.map viewPlaylist playlists)
+            , div [ class "row" ] ((List.concatMap identity << List.indexedMap mapPlaylist) playlists)
             ]
         ]
+
 
 headerView : Model -> Html Msg
 headerView model =
@@ -192,53 +189,54 @@ view model =
         ]
 
 
-
 footerView : Html Msg
 footerView =
     footer []
-    [ div [ class "container" ]
-        [ div [ class "row" ]
-            [ div [ class "col-md-4" ]
-                [ span [ class "copyright" ]
-                    [ text "Copyright © Your Website 2016" ]
-                ]
-            , div [ class "col-md-4" ]
-                [ ul [ class "list-inline social-buttons" ]
-                    [ li []
-                        [ a [ href "#" ]
-                            [ i [ class "fa fa-twitter" ]
-                                []
+        [ div [ class "container" ]
+            [ div [ class "row" ]
+                [ div [ class "col-md-4" ]
+                    [ span [ class "copyright" ]
+                        [ text "Copyright © Your Website 2016" ]
+                    ]
+                , div [ class "col-md-4" ]
+                    [ ul [ class "list-inline social-buttons" ]
+                        [ li []
+                            [ a [ href "#" ]
+                                [ i [ class "fa fa-twitter" ]
+                                    []
+                                ]
                             ]
-                        ]
-                    , li []
-                        [ a [ href "#" ]
-                            [ i [ class "fa fa-facebook" ]
-                                []
+                        , li []
+                            [ a [ href "#" ]
+                                [ i [ class "fa fa-facebook" ]
+                                    []
+                                ]
                             ]
-                        ]
-                    , li []
-                        [ a [ href "#" ]
-                            [ i [ class "fa fa-linkedin" ]
-                                []
+                        , li []
+                            [ a [ href "#" ]
+                                [ i [ class "fa fa-linkedin" ]
+                                    []
+                                ]
                             ]
                         ]
                     ]
-                ]
-            , div [ class "col-md-4" ]
-                [ ul [ class "list-inline quicklinks" ]
-                    [ li []
-                        [ a [ href "#" ]
-                            [ text "Privacy Policy" ]
-                        ]
-                    , li []
-                        [ a [ href "#" ]
-                            [ text "Terms of Use" ]
+                , div [ class "col-md-4" ]
+                    [ ul [ class "list-inline quicklinks" ]
+                        [ li []
+                            [ a [ href "#" ]
+                                [ text "Privacy Policy" ]
+                            ]
+                        , li []
+                            [ a [ href "#" ]
+                                [ text "Terms of Use" ]
+                            ]
                         ]
                     ]
                 ]
             ]
         ]
-    ]
+
+
 
 --   case model.state of
 --     Unlogged -> spotifyLoginView
