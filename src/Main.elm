@@ -61,7 +61,7 @@ update msg model =
 
     SpotifyResponse (token, SpotifyPlaylists data) ->
       case model.state of
-        GotToken r -> Debug.crash "got token"
+        GotToken r -> (model, Spotify.getUserInfo token)
         LoggedIn(t,u,_) ->
           ( {model | state = LoggedIn (t, u, data) }
           , playlistsLoaded ""

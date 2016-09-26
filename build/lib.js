@@ -10184,7 +10184,7 @@ var _user$project$Views$viewPlayLists = function (playlists) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html_Attributes$class('bg-light-gray'),
-				_elm_lang$html$Html_Attributes$id('playlists')
+				_elm_lang$html$Html_Attributes$id('portfolio')
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10512,7 +10512,7 @@ var _user$project$Views$navView = function (model) {
 												_elm_lang$core$Native_List.fromArray(
 													[
 														_elm_lang$html$Html_Attributes$class('page-scroll'),
-														_elm_lang$html$Html_Attributes$href('#playlists')
+														_elm_lang$html$Html_Attributes$href('#portfolio')
 													]),
 												_elm_lang$core$Native_List.fromArray(
 													[
@@ -10734,13 +10734,11 @@ var _user$project$Main$update = F2(
 						do {
 							switch (_p3.ctor) {
 								case 'GotToken':
-									return _elm_lang$core$Native_Utils.crashCase(
-										'Main',
-										{
-											start: {line: 63, column: 7},
-											end: {line: 69, column: 48}
-										},
-										_p3)('got token');
+									return {
+										ctor: '_Tuple2',
+										_0: model,
+										_1: _user$project$Spotify$getUserInfo(_p2._0._0)
+									};
 								case 'LoggedIn':
 									if (_p3._0.ctor === '_Tuple3') {
 										return {
@@ -10770,8 +10768,8 @@ var _user$project$Main$update = F2(
 							_elm_lang$core$Basics$toString(
 								{ctor: '_Tuple2', _0: model, _1: msg}));
 					default:
-						var _p6 = _p2._0._1._0;
-						if ((_p6.ctor === 'BadResponse') && (_p6._0 === 401)) {
+						var _p5 = _p2._0._1._0;
+						if ((_p5.ctor === 'BadResponse') && (_p5._0 === 401)) {
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
@@ -10787,23 +10785,23 @@ var _user$project$Main$update = F2(
 									start: {line: 73, column: 7},
 									end: {line: 78, column: 40}
 								},
-								_p6)(
+								_p5)(
 								_elm_lang$core$Basics$toString(msg));
 						}
 				}
 			case 'LoadPlaylist':
-				var _p8 = model.state;
-				if ((_p8.ctor === 'LoggedIn') && (_p8._0.ctor === '_Tuple3')) {
-					var _p9 = _p8._0._0;
+				var _p7 = model.state;
+				if ((_p7.ctor === 'LoggedIn') && (_p7._0.ctor === '_Tuple3')) {
+					var _p8 = _p7._0._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
 								state: _user$project$Model$LoggedIn(
-									{ctor: '_Tuple3', _0: _p9, _1: _p8._0._1, _2: _p8._0._2})
+									{ctor: '_Tuple3', _0: _p8, _1: _p7._0._1, _2: _p7._0._2})
 							}),
-						_1: A2(_user$project$Spotify$getPlaylistTracks, _p9, _p2._0)
+						_1: A2(_user$project$Spotify$getPlaylistTracks, _p8, _p2._0)
 					};
 				} else {
 					return _elm_lang$core$Native_Utils.crashCase(
@@ -10812,27 +10810,27 @@ var _user$project$Main$update = F2(
 							start: {line: 81, column: 7},
 							end: {line: 86, column: 48}
 						},
-						_p8)(
+						_p7)(
 						_elm_lang$core$Basics$toString(
 							{ctor: '_Tuple2', _0: model, _1: msg}));
 				}
 			case 'ReceiveTracks':
-				var _p11 = {ctor: '_Tuple2', _0: _p2._0, _1: model.state};
-				if ((((_p11.ctor === '_Tuple2') && (_p11._0.ctor === 'Ok')) && (_p11._1.ctor === 'LoggedIn')) && (_p11._1._0.ctor === '_Tuple3')) {
-					var _p12 = _p11._0._0;
+				var _p10 = {ctor: '_Tuple2', _0: _p2._0, _1: model.state};
+				if ((((_p10.ctor === '_Tuple2') && (_p10._0.ctor === 'Ok')) && (_p10._1.ctor === 'LoggedIn')) && (_p10._1._0.ctor === '_Tuple3')) {
+					var _p11 = _p10._0._0;
 					var dd = A2(
 						_elm_lang$core$List$map,
 						function (p) {
-							return _elm_lang$core$Native_Utils.eq(p.id, _p12.id) ? _p12 : p;
+							return _elm_lang$core$Native_Utils.eq(p.id, _p11.id) ? _p11 : p;
 						},
-						_p11._1._0._2);
+						_p10._1._0._2);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
 								state: _user$project$Model$LoggedIn(
-									{ctor: '_Tuple3', _0: _p11._1._0._0, _1: _p11._1._0._1, _2: dd})
+									{ctor: '_Tuple3', _0: _p10._1._0._0, _1: _p10._1._0._1, _2: dd})
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -10843,7 +10841,7 @@ var _user$project$Main$update = F2(
 							start: {line: 89, column: 7},
 							end: {line: 95, column: 48}
 						},
-						_p11)(
+						_p10)(
 						_elm_lang$core$Basics$toString(
 							{ctor: '_Tuple2', _0: model, _1: msg}));
 				}

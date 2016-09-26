@@ -27,7 +27,7 @@ navView model =
                     [ li [ class "hidden" ]
                         [ a [ href "#page-top" ] [] ]
                     , li []
-                        [ a [ class "page-scroll", href "#playlists" ] [ text "Playlists" ] ]
+                        [ a [ class "page-scroll", href "#portfolio" ] [ text "Playlists" ] ]
                     , userProfile model
                     ]
                 ]
@@ -135,7 +135,7 @@ viewPlayLists playlists =
                     , (if (i+1) % 2 == 0 then [ div [ class "clearfix visible-sm-block"] []] else [])
                     ]
     in
-    section [ class "bg-light-gray", id "playlists" ]
+    section [ class "bg-light-gray", id "portfolio" ]
         [ div [ class "container" ]
             [ div [ class "row" ]
                 [ div [ class "col-lg-12 text-center" ]
