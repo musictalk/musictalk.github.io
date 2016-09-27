@@ -87,11 +87,11 @@ decodeTrack =
 decodePlaylistTracks : Decoder (List Song)
 decodePlaylistTracks =
     -- Json.Decode.succeed l
-    "items" := list decodeTrack -- |> map (\songs -> {l | songs = songs})
+    at ["tracks", "items"] (list decodeTrack) -- |> map (\songs -> {l | songs = songs})
 
 fetchListDetails : SpotifyToken -> String -> String -> Task Error SpotifyPlaylist
 fetchListDetails token userId playlistId =
-    getSpotify token (decodePlaylist decodePlaylistTracks) ("https://api.spotify.com/v1/users/"++ userId ++"/playlists/" ++ playlistId ++ "/tracks")
+    getSpotify token (decodePlaylist decodePlaylistTracks) ("https://api.spotify.com/v1/users/"++ userId ++"/playlists/" ++ playlistId ) -- ++ "/tracks"
 
 -- fetchListsDetails : SpotifyToken -> SpotifyData -> Task Error SpotifyData
 -- fetchListsDetails token data =
@@ -107,5 +107,6 @@ getPlaylists token =
 
 getPlaylistTracks : SpotifyToken -> String -> String -> Cmd Msg
 getPlaylistTracks token userId playlistId =
+    -- Cmd.
     fetchListDetails token userId playlistId
     |> Task.perform (ReceiveTracks << Err) (ReceiveTracks << Ok)

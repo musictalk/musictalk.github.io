@@ -9645,8 +9645,9 @@ var _user$project$Spotify$decodeTrack = A4(
 			_elm_lang$core$Json_Decode$list(
 				A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string)))));
 var _user$project$Spotify$decodePlaylistTracks = A2(
-	_elm_lang$core$Json_Decode_ops[':='],
-	'items',
+	_elm_lang$core$Json_Decode$at,
+	_elm_lang$core$Native_List.fromArray(
+		['tracks', 'items']),
 	_elm_lang$core$Json_Decode$list(_user$project$Spotify$decodeTrack));
 var _user$project$Spotify$decodePlaylist = function (decodeSongs) {
 	return A6(
@@ -9759,10 +9760,7 @@ var _user$project$Spotify$fetchListDetails = F3(
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					userId,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'/playlists/',
-						A2(_elm_lang$core$Basics_ops['++'], playlistId, '/tracks')))));
+					A2(_elm_lang$core$Basics_ops['++'], '/playlists/', playlistId))));
 	});
 var _user$project$Spotify$getPlaylistTracks = F3(
 	function (token, userId, playlistId) {
