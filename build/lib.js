@@ -10322,11 +10322,11 @@ var _user$project$Views$content = function (model) {
 				if (_p4._0.ctor === 'Ok') {
 					var _p5 = _p4._0._0;
 					return A2(
-						_elm_lang$html$Html$section,
+						_elm_lang$html$Html$div,
 						_elm_lang$core$Native_List.fromArray(
 							[
 								_elm_lang$html$Html_Attributes$class('bg-light-gray'),
-								_elm_lang$html$Html_Attributes$id('portfolio')
+								_elm_lang$html$Html_Attributes$id('playlist')
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[
@@ -10342,126 +10342,123 @@ var _user$project$Views$content = function (model) {
 										_elm_lang$html$Html$div,
 										_elm_lang$core$Native_List.fromArray(
 											[
-												_elm_lang$html$Html_Attributes$class('row')
+												_elm_lang$html$Html_Attributes$class('jumbotron text-center')
 											]),
 										_elm_lang$core$Native_List.fromArray(
 											[
 												A2(
-												_elm_lang$html$Html$div,
+												_elm_lang$html$Html$img,
 												_elm_lang$core$Native_List.fromArray(
 													[
-														_elm_lang$html$Html_Attributes$class('col-lg-4 col-md-offset-4 text-center')
+														_elm_lang$html$Html_Attributes$alt(''),
+														_elm_lang$html$Html_Attributes$class('img-responsive center-block img-rounded'),
+														_elm_lang$html$Html_Attributes$src(_p5.image)
+													]),
+												_elm_lang$core$Native_List.fromArray(
+													[])),
+												A2(
+												_elm_lang$html$Html$h2,
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html_Attributes$class('section-heading')
 													]),
 												_elm_lang$core$Native_List.fromArray(
 													[
-														A2(
-														_elm_lang$html$Html$img,
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html_Attributes$alt(''),
-																_elm_lang$html$Html_Attributes$class('img-responsive'),
-																_elm_lang$html$Html_Attributes$src(_p5.image)
-															]),
-														_elm_lang$core$Native_List.fromArray(
-															[])),
-														A2(
-														_elm_lang$html$Html$h2,
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html_Attributes$class('section-heading')
-															]),
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html$text(_p5.name)
-															])),
-														A2(
-														_elm_lang$html$Html$h3,
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html_Attributes$class('section-subheading text-muted')
-															]),
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html$text(_p5.owner)
-															]))
+														_elm_lang$html$Html$text(_p5.name)
+													])),
+												A2(
+												_elm_lang$html$Html$h3,
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html_Attributes$class('section-subheading text-muted')
+													]),
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html$text(_p5.owner)
 													]))
 											])),
 										A2(
 										_elm_lang$html$Html$div,
 										_elm_lang$core$Native_List.fromArray(
-											[
-												_elm_lang$html$Html_Attributes$class('row')
-											]),
+											[]),
 										_elm_lang$core$Native_List.fromArray(
 											[
 												A2(
-												_elm_lang$html$Html$div,
+												_elm_lang$html$Html$table,
 												_elm_lang$core$Native_List.fromArray(
 													[
-														_elm_lang$html$Html_Attributes$class('col-lg-6 col-md-offset-3')
+														_elm_lang$html$Html_Attributes$class('table table-condensed table-striped')
 													]),
 												_elm_lang$core$Native_List.fromArray(
 													[
 														A2(
-														_elm_lang$html$Html$table,
+														_elm_lang$html$Html$thead,
 														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html_Attributes$class('table table-condensed')
-															]),
+															[]),
 														_elm_lang$core$Native_List.fromArray(
 															[
 																A2(
-																_elm_lang$html$Html$thead,
+																_elm_lang$html$Html$tr,
 																_elm_lang$core$Native_List.fromArray(
 																	[]),
 																_elm_lang$core$Native_List.fromArray(
 																	[
 																		A2(
-																		_elm_lang$html$Html$tr,
+																		_elm_lang$html$Html$th,
 																		_elm_lang$core$Native_List.fromArray(
 																			[]),
 																		_elm_lang$core$Native_List.fromArray(
 																			[
-																				A2(
-																				_elm_lang$html$Html$th,
-																				_elm_lang$core$Native_List.fromArray(
-																					[]),
-																				_elm_lang$core$Native_List.fromArray(
-																					[
-																						_elm_lang$html$Html$text('#')
-																					])),
-																				A2(
-																				_elm_lang$html$Html$th,
-																				_elm_lang$core$Native_List.fromArray(
-																					[]),
-																				_elm_lang$core$Native_List.fromArray(
-																					[
-																						_elm_lang$html$Html$text('#')
-																					])),
-																				A2(
-																				_elm_lang$html$Html$th,
-																				_elm_lang$core$Native_List.fromArray(
-																					[]),
-																				_elm_lang$core$Native_List.fromArray(
-																					[
-																						_elm_lang$html$Html$text('#')
-																					])),
-																				A2(
-																				_elm_lang$html$Html$th,
-																				_elm_lang$core$Native_List.fromArray(
-																					[]),
-																				_elm_lang$core$Native_List.fromArray(
-																					[
-																						_elm_lang$html$Html$text('#')
-																					]))
-																			]))
-																	])),
-																A2(
-																_elm_lang$html$Html$tbody,
-																_elm_lang$core$Native_List.fromArray(
-																	[]),
-																A2(_elm_lang$core$List$indexedMap, _user$project$Views$viewSong, _p5.songs))
-															]))
+																				_elm_lang$html$Html$text('#')
+																			])),
+																		A2(
+																		_elm_lang$html$Html$th,
+																		_elm_lang$core$Native_List.fromArray(
+																			[]),
+																		_elm_lang$core$Native_List.fromArray(
+																			[
+																				_elm_lang$html$Html$text('Title')
+																			])),
+																		A2(
+																		_elm_lang$html$Html$th,
+																		_elm_lang$core$Native_List.fromArray(
+																			[]),
+																		_elm_lang$core$Native_List.fromArray(
+																			[
+																				_elm_lang$html$Html$text('Artist')
+																			])),
+																		A2(
+																		_elm_lang$html$Html$th,
+																		_elm_lang$core$Native_List.fromArray(
+																			[]),
+																		_elm_lang$core$Native_List.fromArray(
+																			[
+																				_elm_lang$html$Html$text('Album')
+																			])),
+																		A2(
+																		_elm_lang$html$Html$th,
+																		_elm_lang$core$Native_List.fromArray(
+																			[]),
+																		_elm_lang$core$Native_List.fromArray(
+																			[]))
+																	]))
+															])),
+														A2(
+														_elm_lang$html$Html$tbody,
+														_elm_lang$core$Native_List.fromArray(
+															[]),
+														A2(_elm_lang$core$List$indexedMap, _user$project$Views$viewSong, _p5.songs))
+													])),
+												A3(
+												_elm_lang$html$Html$node,
+												'script',
+												_elm_lang$core$Native_List.fromArray(
+													[
+														A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text/javascript')
+													]),
+												_elm_lang$core$Native_List.fromArray(
+													[
+														_elm_lang$html$Html$text('setupTables();')
 													]))
 											]))
 									]))
@@ -10639,8 +10636,8 @@ var _user$project$Routing$pageToData = function (p) {
 				_elm_lang$core$Native_Utils.crash(
 					'Routing',
 					{
-						start: {line: 62, column: 8},
-						end: {line: 62, column: 19}
+						start: {line: 60, column: 8},
+						end: {line: 60, column: 19}
 					}),
 				'pageToData',
 				p);

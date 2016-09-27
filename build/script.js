@@ -58,4 +58,9 @@ var setup = function (_) {
         }
     });
 };
-setup(); 
+setup();
+
+function setupTables(){
+    console.log ("setupTables", $('.table'));
+    $('.table').DataTable({"paging":   false, "info": false});
+}

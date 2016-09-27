@@ -3,8 +3,6 @@ module Routing exposing (..)
 import Navigation
 import UrlParser exposing ((</>))
 import Regex
-import String
-import Spotify
 
 import Model exposing (..)
 
