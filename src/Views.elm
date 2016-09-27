@@ -95,12 +95,14 @@ userProfile model =
             spotifyLoginView
 
 
-viewSong : Song -> Html Msg
-viewSong s =
-    Html.li []
-        [ text s.name
-        , text s.album
-        , text s.artist
+viewSong : Int -> Song -> Html Msg
+viewSong i s =
+    tr []
+        [ th [ attribute "scope" "row" ] [ text (toString <| i+1) ]
+        , td [] [ text s.name ]
+        , td [] [ text s.artist ]
+        , td [] [ text s.album ]
+        , td [] [ text "comments" ]
         ]
 
 
@@ -168,7 +170,7 @@ headerView model =
                 [ div [ class "intro-heading" ]
                     [ text "discuss playlists" ]
                 , div [ class "intro-lead-in" ]
-                    [ text "(and why they're wrong)" ]
+                    [ text "(and ask for more)" ]
                 -- , a [ class "page-scroll btn btn-xl", href "#services" ]
                 --     [ text "Tell Me More" ]
                 ]
@@ -187,7 +189,28 @@ content model =
                 IndexData playlists -> viewPlayLists playlists
             -- h1 [] [ text "playlists" ]
                     
-                PlaylistDetails (Ok d) -> div [] (List.map viewSong d.songs)
+                PlaylistDetails (Ok d) ->
+                section [ class "bg-light-gray", id "portfolio" ]
+                        [ div [ class "container" ]
+                            [ div [ class "row" ]
+                                [ div [ class "col-lg-4 col-md-offset-4 text-center" ]
+                                    [ img [ alt "", class "img-responsive", src d.image ] []
+                                    , h2 [ class "section-heading" ]
+                                        [ text d.name ]
+                                    , h3 [ class "section-subheading text-muted" ]
+                                        [ text d.owner ]
+                                    ]
+                                ]
+                            , div [ class "row" ]
+                                  [ div [class "col-lg-6 col-md-offset-3"]
+                                    [ table [ class "table table-condensed" ]
+                                            [ thead [] [ tr [] [ th [] [text "#"], th [] [text "#"], th [] [text "#"], th [] [text "#"]]]
+                                            , tbody [] (List.indexedMap viewSong d.songs)
+                                            ]
+                                    ]
+                                  ]
+                            ]
+                        ]
                 PlaylistDetails (Err _) -> text "ERROR"
         _ -> div [] [ text (toString model) ]
 
