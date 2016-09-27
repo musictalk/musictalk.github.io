@@ -37,7 +37,7 @@ app.ports.playlistsLoaded.subscribe(function (x) {
 app.ports.storeToken.subscribe(function (token) {
     // console.log("token", token);
     window.localStorage.setItem("token", token);
-     
+    app.ports.answerToken.send(token);
 })
 
 app.ports.queryToken.subscribe(function () {

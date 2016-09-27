@@ -36,8 +36,8 @@ get token decoder url =
         , url = url
         , body = Http.empty
         }
-        d = decoder
-        -- d = (map (Debug.log "json") decoder)
+        -- d = decoder
+        d = (map (Debug.log "json") decoder)
     in
       Http.fromJson d (Http.send Http.defaultSettings request)
 

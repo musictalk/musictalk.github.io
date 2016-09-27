@@ -8,20 +8,18 @@ import Spotify
 
 import Model exposing (..)
 
-type alias QueryString =  { token : String, tokenType : String, expiration : String }
-type Page = Index | LoginResult QueryString | Playlist String String
 toUrl : Model -> String
 toUrl count =
   "#/" ++ toString count
 
 -- http://localhost:8000/index.html#!/user/123/playlist/456
-playlistParser : UrlParser.Parser (Page -> a) a
+playlistParser : UrlParser.Parser (String -> String -> a) a
 playlistParser =
   UrlParser.s "#!" </> UrlParser.s "user" </> UrlParser.string </> UrlParser.s "playlist" </> UrlParser.string
-  |> UrlParser.format Playlist
+  
 
 
-pageParser : UrlParser.Parser (Page -> a) a
+-- pageParser : UrlParser.Parser (Page -> a) a
 pageParser =
   let r = Regex.regex "#access_token=(.*)&token_type=(.*)&expires_in=(\\d+)"
       match = (\x ->
@@ -35,7 +33,7 @@ pageParser =
               |> Result.map (.submatches >> List.filterMap identity)
               |> flip Result.andThen (\l ->
                   case l of
-                    [a,b,c] -> Ok <| LoginResult { token = a, tokenType = b, expiration = c }
+                    [a,b,c] -> Ok { token = a, tokenType = b, expiration = c }
                     _ -> Err "Struct")
             -- (Result.map .submatches) << Result.fromMaybe "" << List.head <| l
           ) 
@@ -44,11 +42,12 @@ pageParser =
 
 fromUrl : String -> Result String Page
 fromUrl url =
-    UrlParser.parse identity (UrlParser.oneOf [
-      playlistParser,
-      pageParser,
-      UrlParser.custom "" (\s -> if String.isEmpty s then Ok Index else Err "NotEmpty")
-    ]) url
+    UrlParser.parse identity (UrlParser.oneOf
+      [ --UrlParser.format Playlists (UrlParser.s "playlists")
+        UrlParser.format Playlist playlistParser
+      , UrlParser.format LoginResult pageParser
+      , UrlParser.custom "" (\_ -> Ok Index)
+      ]) url
 
 
 urlParser : Navigation.Parser (Result String Page)
@@ -62,10 +61,9 @@ sense.
 urlUpdate : Result String Page -> Model -> (Model, Cmd Msg)
 urlUpdate result model =
   case Debug.log "urlUpdate" result of
-    -- Ok Index -> (model, redirect Spotify.loginUrl)
-    Ok (Playlist uid pid) -> model ! [Spotify.getPlaylistTracks "" uid pid]
-    Ok newCount ->
-      (model, Cmd.none)
+    -- Ok (Playlist uid pid) -> model ! [Spotify.getPlaylistTracks "" uid pid]
+    Ok page ->
+      ({model | page = page }, Cmd.none)
 
     Err _ ->
       (model, Navigation.modifyUrl "#")

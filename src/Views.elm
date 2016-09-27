@@ -78,7 +78,7 @@ spotifyLoginView =
 userProfile : Model -> Html Msg
 userProfile model =
     case model.state of
-        LoggedIn ( token, Just user, playlists ) ->
+        LoggedIn token user ->
             let
                 imgSrc =
                     List.head user.photo |> Maybe.withDefault ""
@@ -182,11 +182,14 @@ content model =
         Unlogged ->
             spotifyBigLoginView
 
-        GotToken token ->
-            div [] [ text (toString model), text token ]
-
-        LoggedIn ( token, user, playlists ) ->
-            viewPlayLists playlists
+        LoggedIn token user ->
+            case model.page of
+                IndexData playlists -> viewPlayLists playlists
+            -- h1 [] [ text "playlists" ]
+                    
+                PlaylistDetails (Ok d) -> div [] (List.map viewSong d.songs)
+                PlaylistDetails (Err _) -> text "ERROR"
+        _ -> div [] [ text (toString model) ]
 
 
 view : Model -> Html Msg

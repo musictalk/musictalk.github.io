@@ -9549,9 +9549,13 @@ var _evancz$url_parser$UrlParser$format = F2(
 var _user$project$Model$Flags = function (a) {
 	return {location: a};
 };
-var _user$project$Model$Model = F2(
-	function (a, b) {
-		return {flags: a, state: b};
+var _user$project$Model$QueryString = F3(
+	function (a, b, c) {
+		return {token: a, tokenType: b, expiration: c};
+	});
+var _user$project$Model$Model = F3(
+	function (a, b, c) {
+		return {flags: a, state: b, page: c};
 	});
 var _user$project$Model$SpotifyUserData = F2(
 	function (a, b) {
@@ -9565,9 +9569,24 @@ var _user$project$Model$SpotifyPlaylist = F5(
 	function (a, b, c, d, e) {
 		return {id: a, name: b, owner: c, songs: d, image: e};
 	});
-var _user$project$Model$LoggedIn = function (a) {
-	return {ctor: 'LoggedIn', _0: a};
+var _user$project$Model$Playlist = F2(
+	function (a, b) {
+		return {ctor: 'Playlist', _0: a, _1: b};
+	});
+var _user$project$Model$LoginResult = function (a) {
+	return {ctor: 'LoginResult', _0: a};
 };
+var _user$project$Model$Index = {ctor: 'Index'};
+var _user$project$Model$PlaylistDetails = function (a) {
+	return {ctor: 'PlaylistDetails', _0: a};
+};
+var _user$project$Model$IndexData = function (a) {
+	return {ctor: 'IndexData', _0: a};
+};
+var _user$project$Model$LoggedIn = F2(
+	function (a, b) {
+		return {ctor: 'LoggedIn', _0: a, _1: b};
+	});
 var _user$project$Model$GotToken = function (a) {
 	return {ctor: 'GotToken', _0: a};
 };
@@ -9696,7 +9715,10 @@ var _user$project$Spotify$performTask = function (token) {
 };
 var _user$project$Spotify$get = F3(
 	function (token, decoder, url) {
-		var d = decoder;
+		var d = A2(
+			_elm_lang$core$Json_Decode$map,
+			_elm_lang$core$Debug$log('json'),
+			decoder);
 		var request = {
 			verb: 'GET',
 			headers: _elm_lang$core$Native_List.fromArray(
@@ -10145,8 +10167,8 @@ var _user$project$Views$spotifyLoginView = A2(
 		]));
 var _user$project$Views$userProfile = function (model) {
 	var _p1 = model.state;
-	if (((_p1.ctor === 'LoggedIn') && (_p1._0.ctor === '_Tuple3')) && (_p1._0._1.ctor === 'Just')) {
-		var _p2 = _p1._0._1._0;
+	if (_p1.ctor === 'LoggedIn') {
+		var _p2 = _p1._1;
 		var imgSrc = A2(
 			_elm_lang$core$Maybe$withDefault,
 			'',
@@ -10253,7 +10275,22 @@ var _user$project$Views$content = function (model) {
 	switch (_p3.ctor) {
 		case 'Unlogged':
 			return _user$project$Views$spotifyBigLoginView;
-		case 'GotToken':
+		case 'LoggedIn':
+			var _p4 = model.page;
+			if (_p4.ctor === 'IndexData') {
+				return _user$project$Views$viewPlayLists(_p4._0);
+			} else {
+				if (_p4._0.ctor === 'Ok') {
+					return A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						A2(_elm_lang$core$List$map, _user$project$Views$viewSong, _p4._0._0.songs));
+				} else {
+					return _elm_lang$html$Html$text('ERROR');
+				}
+			}
+		default:
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
@@ -10261,11 +10298,8 @@ var _user$project$Views$content = function (model) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html$text(
-						_elm_lang$core$Basics$toString(model)),
-						_elm_lang$html$Html$text(_p3._0)
+						_elm_lang$core$Basics$toString(model))
 					]));
-		default:
-			return _user$project$Views$viewPlayLists(_p3._0._2);
 	}
 };
 var _user$project$Views$navView = function (model) {
@@ -10413,17 +10447,13 @@ var _user$project$Routing$urlUpdate = F2(
 	function (result, model) {
 		var _p0 = A2(_elm_lang$core$Debug$log, 'urlUpdate', result);
 		if (_p0.ctor === 'Ok') {
-			if (_p0._0.ctor === 'Playlist') {
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
 					model,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A3(_user$project$Spotify$getPlaylistTracks, '', _p0._0._0, _p0._0._1)
-						]));
-			} else {
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			}
+					{page: _p0._0}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
 		} else {
 			return {
 				ctor: '_Tuple2',
@@ -10432,39 +10462,6 @@ var _user$project$Routing$urlUpdate = F2(
 			};
 		}
 	});
-var _user$project$Routing$toUrl = function (count) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		'#/',
-		_elm_lang$core$Basics$toString(count));
-};
-var _user$project$Routing$QueryString = F3(
-	function (a, b, c) {
-		return {token: a, tokenType: b, expiration: c};
-	});
-var _user$project$Routing$Playlist = F2(
-	function (a, b) {
-		return {ctor: 'Playlist', _0: a, _1: b};
-	});
-var _user$project$Routing$playlistParser = A2(
-	_evancz$url_parser$UrlParser$format,
-	_user$project$Routing$Playlist,
-	A2(
-		_evancz$url_parser$UrlParser_ops['</>'],
-		_evancz$url_parser$UrlParser$s('#!'),
-		A2(
-			_evancz$url_parser$UrlParser_ops['</>'],
-			_evancz$url_parser$UrlParser$s('user'),
-			A2(
-				_evancz$url_parser$UrlParser_ops['</>'],
-				_evancz$url_parser$UrlParser$string,
-				A2(
-					_evancz$url_parser$UrlParser_ops['</>'],
-					_evancz$url_parser$UrlParser$s('playlist'),
-					_evancz$url_parser$UrlParser$string)))));
-var _user$project$Routing$LoginResult = function (a) {
-	return {ctor: 'LoginResult', _0: a};
-};
 var _user$project$Routing$pageParser = function () {
 	var r = _elm_lang$core$Regex$regex('#access_token=(.*)&token_type=(.*)&expires_in=(\\d+)');
 	var match = function (x) {
@@ -10476,8 +10473,7 @@ var _user$project$Routing$pageParser = function () {
 				var _p1 = l;
 				if ((((_p1.ctor === '::') && (_p1._1.ctor === '::')) && (_p1._1._1.ctor === '::')) && (_p1._1._1._1.ctor === '[]')) {
 					return _elm_lang$core$Result$Ok(
-						_user$project$Routing$LoginResult(
-							{token: _p1._0, tokenType: _p1._1._0, expiration: _p1._1._1._0}));
+						{token: _p1._0, tokenType: _p1._1._0, expiration: _p1._1._1._0});
 				} else {
 					return _elm_lang$core$Result$Err('Struct');
 				}
@@ -10499,7 +10495,19 @@ var _user$project$Routing$pageParser = function () {
 	};
 	return A2(_evancz$url_parser$UrlParser$custom, 'FAIL', match);
 }();
-var _user$project$Routing$Index = {ctor: 'Index'};
+var _user$project$Routing$playlistParser = A2(
+	_evancz$url_parser$UrlParser_ops['</>'],
+	_evancz$url_parser$UrlParser$s('#!'),
+	A2(
+		_evancz$url_parser$UrlParser_ops['</>'],
+		_evancz$url_parser$UrlParser$s('user'),
+		A2(
+			_evancz$url_parser$UrlParser_ops['</>'],
+			_evancz$url_parser$UrlParser$string,
+			A2(
+				_evancz$url_parser$UrlParser_ops['</>'],
+				_evancz$url_parser$UrlParser$s('playlist'),
+				_evancz$url_parser$UrlParser$string))));
 var _user$project$Routing$fromUrl = function (url) {
 	return A3(
 		_evancz$url_parser$UrlParser$parse,
@@ -10507,25 +10515,68 @@ var _user$project$Routing$fromUrl = function (url) {
 		_evancz$url_parser$UrlParser$oneOf(
 			_elm_lang$core$Native_List.fromArray(
 				[
-					_user$project$Routing$playlistParser,
-					_user$project$Routing$pageParser,
+					A2(_evancz$url_parser$UrlParser$format, _user$project$Model$Playlist, _user$project$Routing$playlistParser),
+					A2(_evancz$url_parser$UrlParser$format, _user$project$Model$LoginResult, _user$project$Routing$pageParser),
 					A2(
 					_evancz$url_parser$UrlParser$custom,
 					'',
-					function (s) {
-						return _elm_lang$core$String$isEmpty(s) ? _elm_lang$core$Result$Ok(_user$project$Routing$Index) : _elm_lang$core$Result$Err('NotEmpty');
+					function (_p3) {
+						return _elm_lang$core$Result$Ok(_user$project$Model$Index);
 					})
 				])),
 		url);
 };
 var _user$project$Routing$urlParser = _elm_lang$navigation$Navigation$makeParser(
-	function (_p3) {
+	function (_p4) {
 		return _user$project$Routing$fromUrl(
 			function (_) {
 				return _.hash;
-			}(_p3));
+			}(_p4));
 	});
+var _user$project$Routing$toUrl = function (count) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'#/',
+		_elm_lang$core$Basics$toString(count));
+};
 
+var _user$project$Main$pageCmd = F2(
+	function (token, p) {
+		var _p0 = p;
+		if (_p0.ctor === 'IndexData') {
+			return _elm_lang$core$Native_List.fromArray(
+				[
+					_user$project$Spotify$getPlaylists(token)
+				]);
+		} else {
+			if (_p0._0.ctor === 'Err') {
+				return _elm_lang$core$Native_List.fromArray(
+					[
+						A3(_user$project$Spotify$getPlaylistTracks, token, _p0._0._0._0, _p0._0._0._1)
+					]);
+			} else {
+				return _elm_lang$core$Native_List.fromArray(
+					[]);
+			}
+		}
+	});
+var _user$project$Main$stateCmd = function (s) {
+	var _p1 = s;
+	switch (_p1.ctor) {
+		case 'GotToken':
+			return _user$project$Spotify$getUserInfo(_p1._0);
+		case 'LoggedIn':
+			return _elm_lang$core$Platform_Cmd$none;
+		default:
+			return _elm_lang$core$Native_Utils.crashCase(
+				'Main',
+				{
+					start: {line: 85, column: 3},
+					end: {line: 88, column: 52}
+				},
+				_p1)('Unlogged in state cmd');
+	}
+};
 var _user$project$Main$redirect = _elm_lang$core$Native_Platform.outgoingPort(
 	'redirect',
 	function (v) {
@@ -10545,186 +10596,126 @@ var _user$project$Main$loadComments = _elm_lang$core$Native_Platform.outgoingPor
 			image: v.image
 		};
 	});
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p3 = A2(_elm_lang$core$Debug$log, 'model', model);
+		var _p4 = A2(_elm_lang$core$Debug$log, 'update', msg);
+		_v2_8:
+		do {
+			switch (_p4.ctor) {
+				case 'StartSpotifyLogin':
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_user$project$Main$redirect(
+								_user$project$Spotify$loginUrl(model.flags.location))
+							]));
+				case 'QueryCachedToken':
+					var _p5 = _p4._0;
+					var m = _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							state: _user$project$Model$GotToken(_p5)
+						});
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						m,
+						A2(
+							_elm_lang$core$List_ops['::'],
+							_user$project$Main$stateCmd(m.state),
+							A2(_user$project$Main$pageCmd, _p5, m.page)));
+				case 'SpotifyResponse':
+					if (_p4._0.ctor === '_Tuple2') {
+						switch (_p4._0._1.ctor) {
+							case 'SpotifyUser':
+								return A2(
+									_elm_lang$core$Platform_Cmd_ops['!'],
+									_elm_lang$core$Native_Utils.update(
+										model,
+										{
+											state: A2(_user$project$Model$LoggedIn, _p4._0._0, _p4._0._1._0)
+										}),
+									_elm_lang$core$Native_List.fromArray(
+										[_elm_lang$core$Platform_Cmd$none]));
+							case 'SpotifyPlaylists':
+								return A2(
+									_elm_lang$core$Platform_Cmd_ops['!'],
+									_elm_lang$core$Native_Utils.update(
+										model,
+										{
+											page: _user$project$Model$IndexData(_p4._0._1._0)
+										}),
+									_elm_lang$core$Native_List.fromArray(
+										[]));
+							default:
+								var _p6 = _p4._0._1._0;
+								if ((_p6.ctor === 'BadResponse') && (_p6._0 === 401)) {
+									return {
+										ctor: '_Tuple2',
+										_0: _elm_lang$core$Native_Utils.update(
+											model,
+											{state: _user$project$Model$Unlogged}),
+										_1: _user$project$Main$redirect(
+											_user$project$Spotify$loginUrl(model.flags.location))
+									};
+								} else {
+									return _elm_lang$core$Native_Utils.crashCase(
+										'Main',
+										{
+											start: {line: 129, column: 15},
+											end: {line: 134, column: 48}
+										},
+										_p6)(
+										_elm_lang$core$Basics$toString(msg));
+								}
+						}
+					} else {
+						break _v2_8;
+					}
+				case 'ReceiveTracks':
+					if (_p4._0.ctor === 'Ok') {
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
+								model,
+								{
+									page: _user$project$Model$PlaylistDetails(
+										_elm_lang$core$Result$Ok(_p4._0._0))
+								}),
+							_elm_lang$core$Native_List.fromArray(
+								[]));
+					} else {
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							_elm_lang$core$Native_List.fromArray(
+								[]));
+					}
+				case 'LoadPlaylistComments':
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _user$project$Main$loadComments(_p4._0)
+					};
+				default:
+					break _v2_8;
+			}
+		} while(false);
+		var x = A2(_elm_lang$core$Debug$log, 'model', model);
+		return _elm_lang$core$Native_Utils.crash(
+			'Main',
+			{
+				start: {line: 161, column: 21},
+				end: {line: 161, column: 32}
+			})(
+			_elm_lang$core$Basics$toString(msg));
+	});
 var _user$project$Main$playlistsLoaded = _elm_lang$core$Native_Platform.outgoingPort(
 	'playlistsLoaded',
 	function (v) {
 		return v;
-	});
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p0 = A2(_elm_lang$core$Debug$log, 'model', model);
-		var _p1 = A2(_elm_lang$core$Debug$log, 'update', msg);
-		switch (_p1.ctor) {
-			case 'StartSpotifyLogin':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Main$redirect(
-						_user$project$Spotify$loginUrl(model.flags.location))
-				};
-			case 'QueryCachedToken':
-				var _p2 = _p1._0;
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					{
-						flags: model.flags,
-						state: _user$project$Model$GotToken(_p2)
-					},
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_user$project$Spotify$getUserInfo(_p2),
-							_user$project$Spotify$getPlaylists(_p2)
-						]));
-			case 'SpotifyResponse':
-				switch (_p1._0._1.ctor) {
-					case 'SpotifyUser':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									state: _user$project$Model$LoggedIn(
-										{
-											ctor: '_Tuple3',
-											_0: _p1._0._0,
-											_1: _elm_lang$core$Maybe$Just(_p1._0._1._0),
-											_2: _elm_lang$core$Native_List.fromArray(
-												[])
-										})
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 'SpotifyPlaylists':
-						var _p5 = _p1._0._1._0;
-						var _p3 = model.state;
-						_v1_2:
-						do {
-							switch (_p3.ctor) {
-								case 'GotToken':
-									return A2(
-										_elm_lang$core$Platform_Cmd_ops['!'],
-										_elm_lang$core$Native_Utils.update(
-											model,
-											{
-												state: _user$project$Model$LoggedIn(
-													{ctor: '_Tuple3', _0: _p3._0, _1: _elm_lang$core$Maybe$Nothing, _2: _p5})
-											}),
-										_elm_lang$core$Native_List.fromArray(
-											[]));
-								case 'LoggedIn':
-									if (_p3._0.ctor === '_Tuple3') {
-										return {
-											ctor: '_Tuple2',
-											_0: _elm_lang$core$Native_Utils.update(
-												model,
-												{
-													state: _user$project$Model$LoggedIn(
-														{ctor: '_Tuple3', _0: _p3._0._0, _1: _p3._0._1, _2: _p5})
-												}),
-											_1: _user$project$Main$playlistsLoaded('')
-										};
-									} else {
-										break _v1_2;
-									}
-								default:
-									break _v1_2;
-							}
-						} while(false);
-						return _elm_lang$core$Native_Utils.crashCase(
-							'Main',
-							{
-								start: {line: 67, column: 7},
-								end: {line: 73, column: 48}
-							},
-							_p3)(
-							_elm_lang$core$Basics$toString(
-								{ctor: '_Tuple2', _0: model, _1: msg}));
-					default:
-						var _p6 = _p1._0._1._0;
-						if ((_p6.ctor === 'BadResponse') && (_p6._0 === 401)) {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Native_Utils.update(
-									model,
-									{state: _user$project$Model$Unlogged}),
-								_1: _user$project$Main$redirect(
-									_user$project$Spotify$loginUrl(model.flags.location))
-							};
-						} else {
-							return _elm_lang$core$Native_Utils.crashCase(
-								'Main',
-								{
-									start: {line: 77, column: 7},
-									end: {line: 82, column: 40}
-								},
-								_p6)(
-								_elm_lang$core$Basics$toString(msg));
-						}
-				}
-			case 'LoadPlaylist':
-				var _p11 = _p1._0;
-				var _p8 = model.state;
-				if ((_p8.ctor === 'LoggedIn') && (_p8._0.ctor === '_Tuple3')) {
-					var _p9 = _p8._0._0;
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								state: _user$project$Model$LoggedIn(
-									{ctor: '_Tuple3', _0: _p9, _1: _p8._0._1, _2: _p8._0._2})
-							}),
-						_1: A3(_user$project$Spotify$getPlaylistTracks, _p9, _p11.owner, _p11.id)
-					};
-				} else {
-					return _elm_lang$core$Native_Utils.crashCase(
-						'Main',
-						{
-							start: {line: 85, column: 7},
-							end: {line: 90, column: 48}
-						},
-						_p8)(
-						_elm_lang$core$Basics$toString(
-							{ctor: '_Tuple2', _0: model, _1: msg}));
-				}
-			case 'ReceiveTracks':
-				var _p12 = {ctor: '_Tuple2', _0: _p1._0, _1: model.state};
-				if ((((_p12.ctor === '_Tuple2') && (_p12._0.ctor === 'Ok')) && (_p12._1.ctor === 'LoggedIn')) && (_p12._1._0.ctor === '_Tuple3')) {
-					var _p13 = _p12._0._0;
-					var dd = A2(
-						_elm_lang$core$List$map,
-						function (p) {
-							return _elm_lang$core$Native_Utils.eq(p.id, _p13.id) ? _p13 : p;
-						},
-						_p12._1._0._2);
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								state: _user$project$Model$LoggedIn(
-									{ctor: '_Tuple3', _0: _p12._1._0._0, _1: _p12._1._0._1, _2: dd})
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return _elm_lang$core$Native_Utils.crashCase(
-						'Main',
-						{
-							start: {line: 93, column: 7},
-							end: {line: 99, column: 48}
-						},
-						_p12)(
-						_elm_lang$core$Basics$toString(
-							{ctor: '_Tuple2', _0: model, _1: msg}));
-				}
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Main$loadComments(_p1._0)
-				};
-		}
 	});
 var _user$project$Main$storeToken = _elm_lang$core$Native_Platform.outgoingPort(
 	'storeToken',
@@ -10737,46 +10728,68 @@ var _user$project$Main$queryToken = _elm_lang$core$Native_Platform.outgoingPort(
 		return null;
 	});
 var _user$project$Main$init = F2(
-	function (flags, r) {
-		var _p15 = A2(_elm_lang$core$Debug$log, 'init', r);
-		_v5_2:
-		do {
-			if (_p15.ctor === 'Ok') {
-				switch (_p15._0.ctor) {
-					case 'LoginResult':
-						var _p16 = _p15._0._0;
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							{
-								flags: flags,
-								state: _user$project$Model$GotToken(_p16.token)
-							},
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_user$project$Main$storeToken(_p16.token),
-									_user$project$Spotify$getUserInfo(_p16.token),
-									_user$project$Spotify$getPlaylists(_p16.token)
-								]));
-					case 'Index':
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							{flags: flags, state: _user$project$Model$Unlogged},
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_user$project$Main$queryToken(
-									{ctor: '_Tuple0'})
-								]));
-					default:
-						break _v5_2;
-				}
-			} else {
-				break _v5_2;
+	function (flags, page) {
+		var _p8 = A2(_elm_lang$core$Debug$log, 'init', page);
+		if (_p8.ctor === 'Ok') {
+			switch (_p8._0.ctor) {
+				case 'LoginResult':
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						{
+							flags: flags,
+							state: _user$project$Model$Unlogged,
+							page: _user$project$Model$IndexData(
+								_elm_lang$core$Native_List.fromArray(
+									[]))
+						},
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_user$project$Main$storeToken(_p8._0._0.token)
+							]));
+				case 'Index':
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						{
+							flags: flags,
+							state: _user$project$Model$Unlogged,
+							page: _user$project$Model$IndexData(
+								_elm_lang$core$Native_List.fromArray(
+									[]))
+						},
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_user$project$Main$queryToken(
+								{ctor: '_Tuple0'})
+							]));
+				default:
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						{
+							flags: flags,
+							state: _user$project$Model$Unlogged,
+							page: _user$project$Model$PlaylistDetails(
+								_elm_lang$core$Result$Err(
+									{ctor: '_Tuple2', _0: _p8._0._0, _1: _p8._0._1}))
+						},
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_user$project$Main$queryToken(
+								{ctor: '_Tuple0'})
+							]));
 			}
-		} while(false);
-		return A2(
-			_user$project$Routing$urlUpdate,
-			r,
-			{flags: flags, state: _user$project$Model$Unlogged});
+		} else {
+			return _elm_lang$core$Native_Utils.crashCase(
+				'Main',
+				{
+					start: {line: 51, column: 5},
+					end: {line: 67, column: 57}
+				},
+				_p8)(
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'init error ',
+					_elm_lang$core$Basics$toString(page)));
+		}
 	});
 var _user$project$Main$answerToken = _elm_lang$core$Native_Platform.incomingPort('answerToken', _elm_lang$core$Json_Decode$string);
 var _user$project$Main$subscriptions = function (model) {

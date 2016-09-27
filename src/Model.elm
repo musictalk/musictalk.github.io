@@ -3,17 +3,34 @@ module Model exposing (..)
 import Http
 
 type alias Location = String
+
+
 type alias Flags = { location: Location }
 
-type ModelState = Unlogged
+
+type alias QueryString =  { token : String, tokenType : String, expiration : String }
+type Page = Index | LoginResult QueryString | Playlist String String
+type PageData = IndexData (List SpotifyPlaylist)
+              | PlaylistDetails (Result (String, String) SpotifyPlaylist)
+              -- | LoginResultData QueryString 
+
+type LoginState = Unlogged
                 | GotToken SpotifyToken
-                | LoggedIn (SpotifyToken, Maybe SpotifyUserData, List SpotifyPlaylist)
+                | LoggedIn SpotifyToken SpotifyUserData
+
+-- type ModelState = Unlogged
+--                 | GotToken SpotifyToken
+--                 | LoggedIn (SpotifyToken, Maybe SpotifyUserData, List SpotifyPlaylist)
 
 
 type alias Model =
   { flags : Flags
-  , state : ModelState 
+  , state : LoginState 
+  , page : PageData
   }
+
+-- Spotify
+
 type alias SpotifyToken = String
 type alias UserId = String
 type alias PlaylistId = String
@@ -35,6 +52,8 @@ type alias SpotifyPlaylist = { id : String
 type SpotifyData = SpotifyUser SpotifyUserData
                  | SpotifyPlaylists (List SpotifyPlaylist) 
                  | SpotifyError Http.Error
+
+-- Actions
 
 type Msg
   = StartSpotifyLogin
