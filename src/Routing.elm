@@ -54,16 +54,9 @@ urlParser : Navigation.Parser (Result String Page)
 urlParser =
   Navigation.makeParser (fromUrl << .hash)
 
-{-| The URL is turned into a result. If the URL is valid, we just update our
-model to the new count. If it is not a valid URL, we modify the URL to make
-sense.
--}
-urlUpdate : Result String Page -> Model -> (Model, Cmd Msg)
-urlUpdate result model =
-  case Debug.log "urlUpdate" result of
-    -- Ok (Playlist uid pid) -> model ! [Spotify.getPlaylistTracks "" uid pid]
-    Ok page ->
-      ({model | page = page }, Cmd.none)
 
-    Err _ ->
-      (model, Navigation.modifyUrl "#")
+pageToData : Page -> PageData
+pageToData p = case p of
+  Index -> IndexData []
+  Playlist u p -> PlaylistDetails (Err(u, p))
+  _ -> Debug.crash "pageToData" p

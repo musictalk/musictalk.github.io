@@ -18,7 +18,7 @@ main =
         { init = init
         , view = Views.view
         , update = update
-        , urlUpdate = Routing.urlUpdate
+        , urlUpdate = urlUpdate
         , subscriptions = subscriptions
         }
 
@@ -96,6 +96,27 @@ pageCmd token p =
         PlaylistDetails (Ok _) -> []
         -- _ -> Debug.crash "pageCmd" p
 
+
+{-| The URL is turned into a result. If the URL is valid, we just update our
+model to the new count. If it is not a valid URL, we modify the URL to make
+sense.
+-}
+urlUpdate : Result String Page -> Model -> (Model, Cmd Msg)
+urlUpdate result model =
+  case Debug.log "urlUpdate" result of
+    -- Ok (Playlist uid pid) -> model ! [Spotify.getPlaylistTracks "" uid pid]
+    Ok page ->
+      case model.state of
+        Unlogged -> Debug.crash "unlogged" model
+        LoggedIn token _ -> 
+          let m = {model | page = Routing.pageToData page } in
+          m ! (stateCmd m.state :: pageCmd token m.page)
+        GotToken token ->
+          let m = {model | page = Routing.pageToData page } in
+          m ! (stateCmd m.state :: pageCmd token m.page)
+
+    Err _ ->
+      (model, Navigation.modifyUrl "#")
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
