@@ -78,10 +78,13 @@ decodePlaylists =
 
 decodeTrack : Decoder Song
 decodeTrack =
-    object3 Song
+    object5 Song
+        (at ["track","id"] string)
         (at ["track","name"] string)
         (at ["track", "album","name"] string)
+        
         (at ["track", "artists" ] (list ("name" := string)) |> map (List.head >> Maybe.withDefault "<Unknown>"))
+        (at ["track", "external_urls", "spotify"] string)
         --  |> map (\x -> {name = x})
 
 decodePlaylistTracks : Decoder (List Song)

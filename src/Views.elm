@@ -102,7 +102,7 @@ viewSong i s =
         , td [] [ text s.name ]
         , td [] [ text s.artist ]
         , td [] [ text s.album ]
-        , td [] [ text "comments" ]
+        , td [] [ a [href (s.href ++ "#disqus_thread"), attribute "data-disqus-identifier" s.id] [text s.id] ]
         ]
 
 

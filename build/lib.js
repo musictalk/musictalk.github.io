@@ -9561,9 +9561,9 @@ var _user$project$Model$SpotifyUserData = F2(
 	function (a, b) {
 		return {name: a, photo: b};
 	});
-var _user$project$Model$Song = F3(
-	function (a, b, c) {
-		return {name: a, album: b, artist: c};
+var _user$project$Model$Song = F5(
+	function (a, b, c, d, e) {
+		return {id: a, name: b, album: c, artist: d, href: e};
 	});
 var _user$project$Model$SpotifyPlaylist = F5(
 	function (a, b, c, d, e) {
@@ -9617,9 +9617,14 @@ var _user$project$Model$QueryCachedToken = function (a) {
 };
 var _user$project$Model$StartSpotifyLogin = {ctor: 'StartSpotifyLogin'};
 
-var _user$project$Spotify$decodeTrack = A4(
-	_elm_lang$core$Json_Decode$object3,
+var _user$project$Spotify$decodeTrack = A6(
+	_elm_lang$core$Json_Decode$object5,
 	_user$project$Model$Song,
+	A2(
+		_elm_lang$core$Json_Decode$at,
+		_elm_lang$core$Native_List.fromArray(
+			['track', 'id']),
+		_elm_lang$core$Json_Decode$string),
 	A2(
 		_elm_lang$core$Json_Decode$at,
 		_elm_lang$core$Native_List.fromArray(
@@ -9643,7 +9648,12 @@ var _user$project$Spotify$decodeTrack = A4(
 			_elm_lang$core$Native_List.fromArray(
 				['track', 'artists']),
 			_elm_lang$core$Json_Decode$list(
-				A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string)))));
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string)))),
+	A2(
+		_elm_lang$core$Json_Decode$at,
+		_elm_lang$core$Native_List.fromArray(
+			['track', 'external_urls', 'spotify']),
+		_elm_lang$core$Json_Decode$string));
 var _user$project$Spotify$decodePlaylistTracks = A2(
 	_elm_lang$core$Json_Decode$at,
 	_elm_lang$core$Native_List.fromArray(
@@ -10189,7 +10199,18 @@ var _user$project$Views$viewSong = F2(
 						[]),
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_elm_lang$html$Html$text('comments')
+							A2(
+							_elm_lang$html$Html$a,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$href(
+									A2(_elm_lang$core$Basics_ops['++'], s.href, '#disqus_thread')),
+									A2(_elm_lang$html$Html_Attributes$attribute, 'data-disqus-identifier', s.id)
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text(s.id)
+								]))
 						]))
 				]));
 	});
@@ -10824,7 +10845,7 @@ var _user$project$Main$loadComments = _elm_lang$core$Native_Platform.outgoingPor
 			owner: v.owner,
 			songs: _elm_lang$core$Native_List.toArray(v.songs).map(
 				function (v) {
-					return {name: v.name, album: v.album, artist: v.artist};
+					return {id: v.id, name: v.name, album: v.album, artist: v.artist, href: v.href};
 				}),
 			image: v.image
 		};

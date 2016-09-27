@@ -25,7 +25,7 @@
     <!-- Theme CSS -->
     <link href="css/agency.css" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="build/inlineDisqussions.css" />
+    <!--<link rel="stylesheet" type="text/css" href="build/inlineDisqussions.css" />-->
     <link rel="stylesheet" type="text/css" href="build/style.css" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -38,7 +38,6 @@
 </head>
 
 <body >
-    
     <div id="page-top" class="index">
     </div>
    
@@ -62,10 +61,43 @@
     <!-- Theme JavaScript -->
     <script src="js/agency.min.js"></script>
 
-    <script src="build/inlineDisqussions.js"></script>
+    <!--<script src="build/inlineDisqussions.js"></script>-->
     <script src="build/lib.js"></script>
     <script src="build/script.js"></script>
 
+    <span class="disqus-comment-count" data-disqus-url="http://localhost:8000/index.html#disqus_thread">0 Comments</span>
+    <span class="disqus-comment-count" data-disqus-url="http://localhost:8000/index234.html#disqus_thread">0 Comments</span>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'musictalk-1';
+    var disqus_identifier = '';
+    var disqus_url = 'http://localhost:8000/index.html#disqus_thread';
+	var disqus_config = function () { 
+	  this.language = "en";
+	};
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    /* * * Disqus Reset Function * * */
+    var reset = function (newIdentifier, newUrl, newTitle, newLanguage) {
+        DISQUS.reset({
+            reload: true,
+            config: function () {
+                this.page.identifier = newIdentifier;
+                this.page.url = newUrl;
+                this.page.title = newTitle;
+                this.language = newLanguage;
+            }
+        });
+    };
+</script>
+
+    <script id="dsq-count-scr" src="//musictalk-1.disqus.com/count.js" async></script>
 </body>
 
 </html>

@@ -38,9 +38,11 @@ type alias PlaylistId = String
 type alias SpotifyUserData = { name : String
                              , photo : List String }
 
-type alias Song = { name : String
+type alias Song = { id : String
+                  , name : String
                   , album : String
                   , artist : String
+                  , href : String
                   }
 
 type alias SpotifyPlaylist = { id : String
