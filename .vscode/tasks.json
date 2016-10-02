@@ -2,37 +2,13 @@
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "0.1.0",
-    "command": "elm",
+    "command": "gulp",
     "isShellCommand": true,
-    "echoCommand": true,
-    "options": {
-        
-    },
-    // "args": ["Hello World"],
+    "args": ["--no-color", "rebuild"],
     "showOutput": "always",
     "tasks": [
-        {"taskName": "-v"},
         {
-            "taskName": "make",
-        "isBuildCommand": true,
-            "showOutput": "always",
-            "args": [
-                "--yes",
-                "src\\Model.elm",
-                "src\\Main.elm",
-                "src\\Spotify.elm",
-                "src\\Routing.elm",
-                "--output", "build\\lib.js",
-                "--warn"
-            ]
-        },
-        {
-            "taskName": "test",
-            "isTestCommand": true,
-            "suppressTaskName": true,
-            "args": [
-                "make", "--yes", "test/Test.elm raw-test.js"
-            ]
+            "taskName": "test","isTestCommand": true
         }
     ]
 }

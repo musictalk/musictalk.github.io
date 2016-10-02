@@ -1,0 +1,8 @@
+{
+  "name": "musictalk",
+  "devDependencies": {
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-elm": "^0.5.0"
+  }
+}
