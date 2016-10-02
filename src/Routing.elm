@@ -1,7 +1,7 @@
 module Routing exposing (..)
 
 import Navigation
-import UrlParser exposing ((</>))
+import UrlParser exposing (..)
 import Regex
 
 import Model exposing (..)
@@ -11,13 +11,16 @@ toUrl count =
   "#/" ++ toString count
 
 -- http://localhost:8000/index.html#!/user/123/playlist/456
-playlistParser : UrlParser.Parser (String -> String -> a) a
+playlistParser : Parser (String -> String -> a) a
 playlistParser =
-  UrlParser.s "#!" </> UrlParser.s "user" </> UrlParser.string </> UrlParser.s "playlist" </> UrlParser.string
+  s "#!" </> s "user" </> string </> s "playlist" </> string
   
+playlistSongParser : Parser (String -> String -> String -> a) a
+playlistSongParser =
+  s "#!" </> s "user" </> string </> s "playlist" </> string </> s "song" </> string
 
 
--- pageParser : UrlParser.Parser (Page -> a) a
+pageParser : Parser (QueryString -> a) a
 pageParser =
   let r = Regex.regex "#access_token=(.*)&token_type=(.*)&expires_in=(\\d+)"
       match = (\x ->
@@ -36,15 +39,16 @@ pageParser =
             -- (Result.map .submatches) << Result.fromMaybe "" << List.head <| l
           ) 
   in
-    UrlParser.custom "FAIL" match
+    custom "FAIL" match
 
 fromUrl : String -> Result String Page
 fromUrl url =
-    UrlParser.parse identity (UrlParser.oneOf
-      [ --UrlParser.format Playlists (UrlParser.s "playlists")
-        UrlParser.format Playlist playlistParser
-      , UrlParser.format LoginResult pageParser
-      , UrlParser.custom "" (\_ -> Ok Index)
+    parse identity (oneOf
+      [ --format Playlists (s "playlists")
+        format (\x y song -> Playlist x y (Just song)) playlistSongParser
+      , format (\x y -> Playlist x y Nothing) playlistParser
+      , format LoginResult pageParser
+      , custom "" (\_ -> Ok Index)
       ]) url
 
 
@@ -56,5 +60,5 @@ urlParser =
 pageToData : Page -> PageData
 pageToData p = case p of
   Index -> IndexData []
-  Playlist u p -> PlaylistDetails (Err(u, p))
+  Playlist u p s -> PlaylistDetails (Err(u, p))
   _ -> Debug.crash "pageToData" p

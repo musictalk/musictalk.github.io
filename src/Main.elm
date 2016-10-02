@@ -27,7 +27,7 @@ port redirect : String -> Cmd msg
 
 
 port loadComments : SpotifyPlaylist -> Cmd msg
-
+port loadSongComments : (String,String,String) -> Cmd msg
 
 port playlistsLoaded : String -> Cmd msg
 
@@ -57,7 +57,7 @@ init flags page =
         Ok Index ->
             { flags = flags, state = Unlogged, page = IndexData [] } ! [ queryToken () ]
 
-        Ok (Playlist uid pid) ->
+        Ok (Playlist uid pid song) ->
             { flags = flags, state = Unlogged, page = PlaylistDetails (Err (uid, pid)) } ! [ queryToken () ]
 
         -- Err e ->
@@ -161,7 +161,7 @@ update msg model =
             --       )
             --     _ -> Debug.crash (toString (model,msg))
             ReceiveTracks (Ok res) ->
-              { model | page = PlaylistDetails (Ok res) } ! []
+              { model | page = PlaylistDetails (Ok (res, Nothing)) } ! []
             ReceiveTracks (Err _) ->
               model  ! []
             --   case (res, model.state) of
@@ -173,7 +173,7 @@ update msg model =
             --     _ -> Debug.crash (toString (model,msg))
             LoadPlaylistComments p ->
                 ( model, loadComments p )
-
+            LoadSongComments pl song -> model ! [ loadSongComments <| (,,) (pl.id ++ "/" ++ song.id) (Views.playlistSongUrl pl song) song.name]
             _ ->
                 let
                     x =

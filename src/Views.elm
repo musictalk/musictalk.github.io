@@ -95,21 +95,32 @@ userProfile model =
             spotifyLoginView
 
 
-viewSong : Int -> Song -> Html Msg
-viewSong i s =
+viewSong : Int -> SpotifyPlaylist -> Song -> Html Msg
+viewSong i p s =
     tr []
         [ th [ attribute "scope" "row" ] [ text (toString <| i+1) ]
         , td [] [ text s.name ]
         , td [] [ text s.artist ]
         , td [] [ text s.album ]
-        , td [] [ a [href (s.href ++ "#disqus_thread"), attribute "data-disqus-identifier" s.id] [text s.id] ]
+        -- , td [] [ a [href (s.href ++ "#disqus_thread"), attribute "data-disqus-identifier" s.id] [text s.id] ]
+        , td []
+             [ {-span [ href (playlistSongUrl p s)
+                    , attribute "data-disqus-identifier" (p.id ++ "/" ++ s.id)
+                    ] [text s.id]
+             , -}button [ onClick (LoadSongComments p s) ] [ text "comments" ] 
+             ]
         ]
+
+playlistUrl : SpotifyPlaylist -> String
+playlistUrl playlist = "#!/user/"++playlist.owner++"/playlist/" ++ playlist.id
+playlistSongUrl : SpotifyPlaylist -> Song -> String
+playlistSongUrl playlist song = playlistUrl playlist ++ "/song/" ++ song.id
 
 
 viewPlaylist : SpotifyPlaylist -> Html Msg
 viewPlaylist playlist =
     div [ class "col-md-4 col-sm-6 portfolio-item" ]
-        [ a [ class "portfolio-link", href <| "#!/user/"++playlist.owner++"/playlist/" ++ playlist.id ]
+        [ a [ class "portfolio-link", href <| playlistUrl playlist ]
             [ div [ class "portfolio-hover" ]
                 [ div [ class "portfolio-hover-content" ]
                     [ i [ class "fa fa-plus fa-3x" ]
@@ -207,7 +218,7 @@ content model =
                                 --   [ div [class "col-lg-6 col-md-offset-3"]
                                     [ table [ class "table table-condensed table-striped" ]
                                             [ thead [] [ tr [] [ th [] [text "#"], th [] [text "Title"], th [] [text "Artist"], th [] [text "Album"], th [] []]]
-                                            , tbody [] (List.indexedMap viewSong d.songs)
+                                            , tbody [] (List.indexedMap (\i p -> viewSong i d p) d.songs)
                                             ]
                                     , node "script" [ attribute "type" "text/javascript" ] [ text "setupTables();" ]
                                     ]

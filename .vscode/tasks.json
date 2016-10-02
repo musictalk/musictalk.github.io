@@ -21,6 +21,7 @@
                 "src\\Model.elm",
                 "src\\Main.elm",
                 "src\\Spotify.elm",
+                "src\\Routing.elm",
                 "--output", "build\\lib.js",
                 "--warn"
             ]

@@ -9,9 +9,13 @@ type alias Flags = { location: Location }
 
 
 type alias QueryString =  { token : String, tokenType : String, expiration : String }
-type Page = Index | LoginResult QueryString | Playlist String String
+
+type Page = Index
+          | LoginResult QueryString
+          | Playlist String String (Maybe String)
+
 type PageData = IndexData (List SpotifyPlaylist)
-              | PlaylistDetails (Result (String, String) SpotifyPlaylist)
+              | PlaylistDetails (Result (String, String) (SpotifyPlaylist, Maybe String))
               -- | LoginResultData QueryString 
 
 type LoginState = Unlogged
@@ -64,3 +68,4 @@ type Msg
   | LoadPlaylist SpotifyPlaylist
   | ReceiveTracks (Result Http.Error SpotifyPlaylist)
   | LoadPlaylistComments SpotifyPlaylist
+  | LoadSongComments SpotifyPlaylist Song

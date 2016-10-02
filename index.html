@@ -68,7 +68,6 @@
     <span class="disqus-comment-count" data-disqus-url="http://localhost:8000/index.html#disqus_thread">0 Comments</span>
     <span class="disqus-comment-count" data-disqus-url="http://localhost:8000/index234.html#disqus_thread">0 Comments</span>
 
-<div id="disqus_thread"></div>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
     var disqus_shortname = 'musictalk-1';
@@ -89,7 +88,7 @@
             reload: true,
             config: function () {
                 this.page.identifier = newIdentifier;
-                this.page.url = newUrl;
+                this.page.url = "http://localhost:8000/index.html" + newUrl;
                 this.page.title = newTitle;
                 this.language = newLanguage;
             }

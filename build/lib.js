@@ -9569,9 +9569,9 @@ var _user$project$Model$SpotifyPlaylist = F5(
 	function (a, b, c, d, e) {
 		return {id: a, name: b, owner: c, songs: d, image: e};
 	});
-var _user$project$Model$Playlist = F2(
-	function (a, b) {
-		return {ctor: 'Playlist', _0: a, _1: b};
+var _user$project$Model$Playlist = F3(
+	function (a, b, c) {
+		return {ctor: 'Playlist', _0: a, _1: b, _2: c};
 	});
 var _user$project$Model$LoginResult = function (a) {
 	return {ctor: 'LoginResult', _0: a};
@@ -9600,6 +9600,10 @@ var _user$project$Model$SpotifyPlaylists = function (a) {
 var _user$project$Model$SpotifyUser = function (a) {
 	return {ctor: 'SpotifyUser', _0: a};
 };
+var _user$project$Model$LoadSongComments = F2(
+	function (a, b) {
+		return {ctor: 'LoadSongComments', _0: a, _1: b};
+	});
 var _user$project$Model$LoadPlaylistComments = function (a) {
 	return {ctor: 'LoadPlaylistComments', _0: a};
 };
@@ -9949,6 +9953,22 @@ var _user$project$Views$headerView = function (model) {
 					]))
 			]));
 };
+var _user$project$Views$playlistUrl = function (playlist) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'#!/user/',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			playlist.owner,
+			A2(_elm_lang$core$Basics_ops['++'], '/playlist/', playlist.id)));
+};
+var _user$project$Views$playlistSongUrl = F2(
+	function (playlist, song) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Views$playlistUrl(playlist),
+			A2(_elm_lang$core$Basics_ops['++'], '/song/', song.id));
+	});
 var _user$project$Views$viewPlaylist = function (playlist) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -9964,13 +9984,7 @@ var _user$project$Views$viewPlaylist = function (playlist) {
 					[
 						_elm_lang$html$Html_Attributes$class('portfolio-link'),
 						_elm_lang$html$Html_Attributes$href(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'#!/user/',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								playlist.owner,
-								A2(_elm_lang$core$Basics_ops['++'], '/playlist/', playlist.id))))
+						_user$project$Views$playlistUrl(playlist))
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
@@ -10150,8 +10164,8 @@ var _user$project$Views$viewPlayLists = function (playlists) {
 					]))
 			]));
 };
-var _user$project$Views$viewSong = F2(
-	function (i, s) {
+var _user$project$Views$viewSong = F3(
+	function (i, p, s) {
 		return A2(
 			_elm_lang$html$Html$tr,
 			_elm_lang$core$Native_List.fromArray(
@@ -10200,16 +10214,15 @@ var _user$project$Views$viewSong = F2(
 					_elm_lang$core$Native_List.fromArray(
 						[
 							A2(
-							_elm_lang$html$Html$a,
+							_elm_lang$html$Html$button,
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_elm_lang$html$Html_Attributes$href(
-									A2(_elm_lang$core$Basics_ops['++'], s.href, '#disqus_thread')),
-									A2(_elm_lang$html$Html_Attributes$attribute, 'data-disqus-identifier', s.id)
+									_elm_lang$html$Html_Events$onClick(
+									A2(_user$project$Model$LoadSongComments, p, s))
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_elm_lang$html$Html$text(s.id)
+									_elm_lang$html$Html$text('comments')
 								]))
 						]))
 				]));
@@ -10468,7 +10481,13 @@ var _user$project$Views$content = function (model) {
 														_elm_lang$html$Html$tbody,
 														_elm_lang$core$Native_List.fromArray(
 															[]),
-														A2(_elm_lang$core$List$indexedMap, _user$project$Views$viewSong, _p5.songs))
+														A2(
+															_elm_lang$core$List$indexedMap,
+															F2(
+																function (i, p) {
+																	return A3(_user$project$Views$viewSong, i, _p5, p);
+																}),
+															_p5.songs))
 													])),
 												A3(
 												_elm_lang$html$Html$node,
@@ -10657,8 +10676,8 @@ var _user$project$Routing$pageToData = function (p) {
 				_elm_lang$core$Native_Utils.crash(
 					'Routing',
 					{
-						start: {line: 60, column: 8},
-						end: {line: 60, column: 19}
+						start: {line: 64, column: 8},
+						end: {line: 64, column: 19}
 					}),
 				'pageToData',
 				p);
@@ -10697,6 +10716,25 @@ var _user$project$Routing$pageParser = function () {
 	};
 	return A2(_evancz$url_parser$UrlParser$custom, 'FAIL', match);
 }();
+var _user$project$Routing$playlistSongParser = A2(
+	_evancz$url_parser$UrlParser_ops['</>'],
+	_evancz$url_parser$UrlParser$s('#!'),
+	A2(
+		_evancz$url_parser$UrlParser_ops['</>'],
+		_evancz$url_parser$UrlParser$s('user'),
+		A2(
+			_evancz$url_parser$UrlParser_ops['</>'],
+			_evancz$url_parser$UrlParser$string,
+			A2(
+				_evancz$url_parser$UrlParser_ops['</>'],
+				_evancz$url_parser$UrlParser$s('playlist'),
+				A2(
+					_evancz$url_parser$UrlParser_ops['</>'],
+					_evancz$url_parser$UrlParser$string,
+					A2(
+						_evancz$url_parser$UrlParser_ops['</>'],
+						_evancz$url_parser$UrlParser$s('song'),
+						_evancz$url_parser$UrlParser$string))))));
 var _user$project$Routing$playlistParser = A2(
 	_evancz$url_parser$UrlParser_ops['</>'],
 	_evancz$url_parser$UrlParser$s('#!'),
@@ -10717,7 +10755,24 @@ var _user$project$Routing$fromUrl = function (url) {
 		_evancz$url_parser$UrlParser$oneOf(
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A2(_evancz$url_parser$UrlParser$format, _user$project$Model$Playlist, _user$project$Routing$playlistParser),
+					A2(
+					_evancz$url_parser$UrlParser$format,
+					F3(
+						function (x, y, song) {
+							return A3(
+								_user$project$Model$Playlist,
+								x,
+								y,
+								_elm_lang$core$Maybe$Just(song));
+						}),
+					_user$project$Routing$playlistSongParser),
+					A2(
+					_evancz$url_parser$UrlParser$format,
+					F2(
+						function (x, y) {
+							return A3(_user$project$Model$Playlist, x, y, _elm_lang$core$Maybe$Nothing);
+						}),
+					_user$project$Routing$playlistParser),
 					A2(_evancz$url_parser$UrlParser$format, _user$project$Model$LoginResult, _user$project$Routing$pageParser),
 					A2(
 					_evancz$url_parser$UrlParser$custom,
@@ -10850,11 +10905,16 @@ var _user$project$Main$loadComments = _elm_lang$core$Native_Platform.outgoingPor
 			image: v.image
 		};
 	});
+var _user$project$Main$loadSongComments = _elm_lang$core$Native_Platform.outgoingPort(
+	'loadSongComments',
+	function (v) {
+		return [v._0, v._1, v._2];
+	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p6 = A2(_elm_lang$core$Debug$log, 'model', model);
 		var _p7 = A2(_elm_lang$core$Debug$log, 'update', msg);
-		_v4_8:
+		_v4_9:
 		do {
 			switch (_p7.ctor) {
 				case 'StartSpotifyLogin':
@@ -10926,7 +10986,7 @@ var _user$project$Main$update = F2(
 								}
 						}
 					} else {
-						break _v4_8;
+						break _v4_9;
 					}
 				case 'ReceiveTracks':
 					if (_p7._0.ctor === 'Ok') {
@@ -10936,7 +10996,8 @@ var _user$project$Main$update = F2(
 								model,
 								{
 									page: _user$project$Model$PlaylistDetails(
-										_elm_lang$core$Result$Ok(_p7._0._0))
+										_elm_lang$core$Result$Ok(
+											{ctor: '_Tuple2', _0: _p7._0._0, _1: _elm_lang$core$Maybe$Nothing}))
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
@@ -10953,8 +11014,29 @@ var _user$project$Main$update = F2(
 						_0: model,
 						_1: _user$project$Main$loadComments(_p7._0)
 					};
+				case 'LoadSongComments':
+					var _p12 = _p7._1;
+					var _p11 = _p7._0;
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_user$project$Main$loadSongComments(
+								A3(
+									F3(
+										function (v0, v1, v2) {
+											return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
+										}),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_p11.id,
+										A2(_elm_lang$core$Basics_ops['++'], '/', _p12.id)),
+									A2(_user$project$Views$playlistSongUrl, _p11, _p12),
+									_p12.name))
+							]));
 				default:
-					break _v4_8;
+					break _v4_9;
 			}
 		} while(false);
 		var x = A2(_elm_lang$core$Debug$log, 'model', model);
@@ -10983,9 +11065,9 @@ var _user$project$Main$queryToken = _elm_lang$core$Native_Platform.outgoingPort(
 	});
 var _user$project$Main$init = F2(
 	function (flags, page) {
-		var _p11 = A2(_elm_lang$core$Debug$log, 'init', page);
-		if (_p11.ctor === 'Ok') {
-			switch (_p11._0.ctor) {
+		var _p13 = A2(_elm_lang$core$Debug$log, 'init', page);
+		if (_p13.ctor === 'Ok') {
+			switch (_p13._0.ctor) {
 				case 'LoginResult':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10998,7 +11080,7 @@ var _user$project$Main$init = F2(
 						},
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_user$project$Main$storeToken(_p11._0._0.token)
+								_user$project$Main$storeToken(_p13._0._0.token)
 							]));
 				case 'Index':
 					return A2(
@@ -11023,7 +11105,7 @@ var _user$project$Main$init = F2(
 							state: _user$project$Model$Unlogged,
 							page: _user$project$Model$PlaylistDetails(
 								_elm_lang$core$Result$Err(
-									{ctor: '_Tuple2', _0: _p11._0._0, _1: _p11._0._1}))
+									{ctor: '_Tuple2', _0: _p13._0._0, _1: _p13._0._1}))
 						},
 						_elm_lang$core$Native_List.fromArray(
 							[
@@ -11038,7 +11120,7 @@ var _user$project$Main$init = F2(
 					start: {line: 51, column: 5},
 					end: {line: 67, column: 57}
 				},
-				_p11)(
+				_p13)(
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					'init error ',
@@ -11068,6 +11150,8 @@ Elm['Main'] = Elm['Main'] || {};
 _elm_lang$core$Native_Platform.addPublicModule(Elm['Main'], 'Main', typeof _user$project$Main$main === 'undefined' ? null : _user$project$Main$main);
 Elm['Model'] = Elm['Model'] || {};
 _elm_lang$core$Native_Platform.addPublicModule(Elm['Model'], 'Model', typeof _user$project$Model$main === 'undefined' ? null : _user$project$Model$main);
+Elm['Routing'] = Elm['Routing'] || {};
+_elm_lang$core$Native_Platform.addPublicModule(Elm['Routing'], 'Routing', typeof _user$project$Routing$main === 'undefined' ? null : _user$project$Routing$main);
 Elm['Spotify'] = Elm['Spotify'] || {};
 _elm_lang$core$Native_Platform.addPublicModule(Elm['Spotify'], 'Spotify', typeof _user$project$Spotify$main === 'undefined' ? null : _user$project$Spotify$main);
 

@@ -19,19 +19,32 @@ app.ports.loadComments.subscribe(function (playlist) {
 
 });
 
-app.ports.playlistsLoaded.subscribe(function (x) {
-    disqus_shortname = 'musictalk-1';
-
-    console.log("ready", performance.now(), jQuery(".playlist").length);
-    window.requestAnimationFrame(function (time) {
-        console.log("callback", performance.now(), jQuery(".playlist").length);
-        jQuery(".playlist").inlineDisqussions({
-            position: 'right',
-            maxWidth: 300
-        });
+app.ports.loadSongComments.subscribe(function (idUrlTitle) {
+    var fullUrl = location.origin + location.pathname + idUrlTitle[1];
+    DISQUS.reset({
+        reload: true,
+        config: function () {
+            this.page.identifier = idUrlTitle[0];
+            this.page.url = fullUrl;
+            this.page.title = idUrlTitle[2];
+            // this.language = newLanguage;
+        }
     });
+})
 
-});
+// app.ports.playlistsLoaded.subscribe(function (x) {
+//     disqus_shortname = 'musictalk-1';
+
+//     console.log("ready", performance.now(), jQuery(".playlist").length);
+//     window.requestAnimationFrame(function (time) {
+//         console.log("callback", performance.now(), jQuery(".playlist").length);
+//         jQuery(".playlist").inlineDisqussions({
+//             position: 'right',
+//             maxWidth: 300
+//         });
+//     });
+
+// });
 
 
 app.ports.storeToken.subscribe(function (token) {
@@ -61,6 +74,6 @@ var setup = function (_) {
 setup();
 
 function setupTables(){
-    console.log ("setupTables", $('.table'));
-    $('.table').DataTable({"paging":   false, "info": false});
+    // console.log ("setupTables", $('.table'));
+    // $('.table').DataTable({"paging":   false, "info": false});
 }
