@@ -15,7 +15,7 @@ type Page = Index
           | Playlist String String (Maybe String)
 
 type PageData = IndexData (List SpotifyPlaylist)
-              | PlaylistDetails (Result (String, String) (SpotifyPlaylist, Maybe String))
+              | PlaylistDetails (Result (String, String, Maybe String) (SpotifyPlaylist, Maybe String))
               -- | LoginResultData QueryString 
 
 type LoginState = Unlogged
@@ -38,6 +38,7 @@ type alias Model =
 type alias SpotifyToken = String
 type alias UserId = String
 type alias PlaylistId = String
+type alias SongId = String
 
 type alias SpotifyUserData = { name : String
                              , photo : List String }

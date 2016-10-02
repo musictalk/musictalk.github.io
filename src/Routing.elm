@@ -60,5 +60,5 @@ urlParser =
 pageToData : Page -> PageData
 pageToData p = case p of
   Index -> IndexData []
-  Playlist u p s -> PlaylistDetails (Err(u, p))
+  Playlist u p s -> PlaylistDetails (Err(u, p, s))
   _ -> Debug.crash "pageToData" p

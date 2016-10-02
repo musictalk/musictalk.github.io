@@ -20,15 +20,19 @@ app.ports.loadComments.subscribe(function (playlist) {
 });
 
 app.ports.loadSongComments.subscribe(function (idUrlTitle) {
-    var fullUrl = location.origin + location.pathname + idUrlTitle[1];
-    DISQUS.reset({
-        reload: true,
-        config: function () {
-            this.page.identifier = idUrlTitle[0];
-            this.page.url = fullUrl;
-            this.page.title = idUrlTitle[2];
-            // this.language = newLanguage;
-        }
+    console.log("loadSongComments", idUrlTitle);
+    window.requestAnimationFrame(function (t) {
+        console.log("loadSongComments CALLBACK", idUrlTitle);
+        var fullUrl = location.origin + location.pathname + idUrlTitle[1];
+        DISQUS.reset({
+            reload: true,
+            config: function () {
+                this.page.identifier = idUrlTitle[0];
+                this.page.url = fullUrl;
+                this.page.title = idUrlTitle[2];
+                // this.language = newLanguage;
+            }
+        });
     });
 })
 
@@ -56,7 +60,7 @@ app.ports.storeToken.subscribe(function (token) {
 app.ports.queryToken.subscribe(function () {
     console.log("query token");
     var t = window.localStorage.getItem("token");
-    if(t != null)
+    if (t != null)
         app.ports.answerToken.send(t);
 });
 
@@ -73,7 +77,7 @@ var setup = function (_) {
 };
 setup();
 
-function setupTables(){
+function setupTables() {
     // console.log ("setupTables", $('.table'));
     // $('.table').DataTable({"paging":   false, "info": false});
 }

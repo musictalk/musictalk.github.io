@@ -58,7 +58,7 @@ init flags page =
             { flags = flags, state = Unlogged, page = IndexData [] } ! [ queryToken () ]
 
         Ok (Playlist uid pid song) ->
-            { flags = flags, state = Unlogged, page = PlaylistDetails (Err (uid, pid)) } ! [ queryToken () ]
+            { flags = flags, state = Unlogged, page = PlaylistDetails (Err (uid, pid, song)) } ! [ queryToken () ]
 
         -- Err e ->
         --     Routing.urlUpdate page { flags = flags, state = Unlogged, page = IndexData [] }
@@ -92,7 +92,7 @@ pageCmd : SpotifyToken -> PageData -> List (Cmd Msg)
 pageCmd token p =
     case p of
         IndexData _ -> [ Spotify.getPlaylists token ]
-        PlaylistDetails (Err(uid, pid)) -> [ Spotify.getPlaylistTracks token uid pid ]
+        PlaylistDetails (Err(uid, pid, song)) -> [ Spotify.getPlaylistTracks token uid pid ]
         PlaylistDetails (Ok _) -> []
         -- _ -> Debug.crash "pageCmd" p
 
@@ -120,11 +120,8 @@ urlUpdate result model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    let
-        _ =
-            Debug.log "model" model
-    in
-        case Debug.log "update" msg of
+    -- let _ = Debug.log "model" model in
+        case msg {- Debug.log "update" msg -} of
             StartSpotifyLogin ->
                 model ! [ redirect <| Spotify.loginUrl model.flags.location ]
 
@@ -160,8 +157,15 @@ update msg model =
             --       , Spotify.getPlaylistTracks t p.owner p.id
             --       )
             --     _ -> Debug.crash (toString (model,msg))
-            ReceiveTracks (Ok res) ->
-              { model | page = PlaylistDetails (Ok (res, Nothing)) } ! []
+            ReceiveTracks (Ok pl) ->
+              let _ = Debug.log "ReceiveTracks model" model in
+              case model.page of
+                PlaylistDetails (Err(_,_,songId)) -> { model | page = PlaylistDetails (Ok (pl, songId)) }
+                 ! case songId of
+                    Nothing -> []
+                    Just jSongId -> [ loadSongComments <| (,,) (pl.id ++ "/" ++ jSongId) (Views.playlistSongUrl pl jSongId) jSongId]
+                 
+                _ -> Debug.crash "WTF"
             ReceiveTracks (Err _) ->
               model  ! []
             --   case (res, model.state) of
@@ -173,10 +177,11 @@ update msg model =
             --     _ -> Debug.crash (toString (model,msg))
             LoadPlaylistComments p ->
                 ( model, loadComments p )
-            LoadSongComments pl song -> model ! [ loadSongComments <| (,,) (pl.id ++ "/" ++ song.id) (Views.playlistSongUrl pl song) song.name]
+            LoadSongComments pl song -> model ! [ Navigation.newUrl (Views.playlistSongUrl pl song.id) ]
+                -- [ loadSongComments <| (,,) (pl.id ++ "/" ++ song.id) (Views.playlistSongUrl pl song) song.name]
             _ ->
-                let
-                    x =
-                        Debug.log "model" model
-                in
+                -- let
+                --     x =
+                --         Debug.log "model" model
+                -- in
                     Debug.crash (toString msg)

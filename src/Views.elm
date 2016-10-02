@@ -95,8 +95,8 @@ userProfile model =
             spotifyLoginView
 
 
-viewSong : Int -> SpotifyPlaylist -> Song -> Html Msg
-viewSong i p s =
+viewSong : Int -> SpotifyPlaylist -> Song -> Maybe SongId -> List(Html Msg)
+viewSong i p s selectedSong =
     tr []
         [ th [ attribute "scope" "row" ] [ text (toString <| i+1) ]
         , td [] [ text s.name ]
@@ -110,11 +110,22 @@ viewSong i p s =
              , -}button [ onClick (LoadSongComments p s) ] [ text "comments" ] 
              ]
         ]
+    :: case selectedSong of
+        Just selId -> if s.id /= selId
+                   then []
+                   else [ tr []
+                            [ td [ attribute "colspan" "5"]
+                                [ div [ id "disqus_thread" ] [] ]
+                            ]
+                        ]
+        _ -> []
+        --     
+        -- else []
 
 playlistUrl : SpotifyPlaylist -> String
 playlistUrl playlist = "#!/user/"++playlist.owner++"/playlist/" ++ playlist.id
-playlistSongUrl : SpotifyPlaylist -> Song -> String
-playlistSongUrl playlist song = playlistUrl playlist ++ "/song/" ++ song.id
+playlistSongUrl : SpotifyPlaylist -> SongId -> String
+playlistSongUrl playlist songId = playlistUrl playlist ++ "/song/" ++ songId
 
 
 viewPlaylist : SpotifyPlaylist -> Html Msg
@@ -200,31 +211,32 @@ content model =
                 IndexData playlists -> viewPlayLists playlists
             -- h1 [] [ text "playlists" ]
                     
-                PlaylistDetails (Ok d) ->
-                div [ class "bg-light-gray", id "playlist" ]
-                        [ div [ class "container" ]
-                            -- [ div [ class "row" ]
-                            [ div [ class "jumbotron text-center" ] 
-                                -- [ div [ class "col-lg-4 col-md-offset-4 text-center" ]
-                                    [ img [ alt "", class "img-responsive center-block img-rounded", src d.image ] []
-                                    , h2 [ class "section-heading" ]
-                                        [ text d.name ]
-                                    , h3 [ class "section-subheading text-muted" ]
-                                        [ text d.owner ]
-                                    ]
-                                -- ]
-                            , div []
-                            -- , div [ class "row" ]
-                                --   [ div [class "col-lg-6 col-md-offset-3"]
-                                    [ table [ class "table table-condensed table-striped" ]
-                                            [ thead [] [ tr [] [ th [] [text "#"], th [] [text "Title"], th [] [text "Artist"], th [] [text "Album"], th [] []]]
-                                            , tbody [] (List.indexedMap (\i p -> viewSong i d p) d.songs)
-                                            ]
-                                    , node "script" [ attribute "type" "text/javascript" ] [ text "setupTables();" ]
-                                    ]
-                                --   ]
+                PlaylistDetails (Ok (playlist,selectedSong)) ->
+                    let _ = Debug.log "selected song" selectedSong in
+                    div [ class "bg-light-gray", id "playlist" ]
+                            [ div [ class "container" ]
+                                -- [ div [ class "row" ]
+                                [ div [ class "jumbotron text-center" ] 
+                                    -- [ div [ class "col-lg-4 col-md-offset-4 text-center" ]
+                                        [ img [ alt "", class "img-responsive center-block img-rounded", src playlist.image ] []
+                                        , h2 [ class "section-heading" ]
+                                            [ text playlist.name ]
+                                        , h3 [ class "section-subheading text-muted" ]
+                                            [ text playlist.owner ]
+                                        ]
+                                    -- ]
+                                , div []
+                                -- , div [ class "row" ]
+                                    --   [ div [class "col-lg-6 col-md-offset-3"]
+                                        [ table [ class "table table-condensed table-striped" ]
+                                                [ thead [] [ tr [] [ th [] [text "#"], th [] [text "Title"], th [] [text "Artist"], th [] [text "Album"], th [] []]]
+                                                , tbody [] (List.indexedMap (\i song -> viewSong i playlist song selectedSong) playlist.songs |> List.concat)
+                                                ]
+                                        , node "script" [ attribute "type" "text/javascript" ] [ text "setupTables();" ]
+                                        ]
+                                    --   ]
+                                ]
                             ]
-                        ]
                 PlaylistDetails (Err _) -> text "ERROR"
         _ -> div [] [ text (toString model) ]
 
