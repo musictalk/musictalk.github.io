@@ -57,8 +57,13 @@ urlParser =
   Navigation.makeParser (fromUrl << .hash)
 
 
-pageToData : Page -> PageData
-pageToData p = case p of
-  Index -> IndexData []
-  Playlist u p s -> PlaylistReq u p s
-  _ -> Debug.crash "pageToData" p
+pageToData : Model -> Page -> PageData
+pageToData model p =
+  let _ = Debug.log "pageToData" (dumpModel model, p) in
+  case p of
+    Index -> IndexData []
+    Playlist u p s ->
+      case model.page of
+        PlaylistDetails pl so -> if pl.id == p then PlaylistDetails pl s else PlaylistReq u p s 
+        _ -> PlaylistReq u p s
+    _ -> Debug.crash "pageToData" p

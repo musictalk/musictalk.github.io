@@ -35,9 +35,9 @@ app.ports.loadSongComments.subscribe(function (idUrlTitleIndex) {
                 // this.language = newLanguage;
             }
         });
-        $('html,body').animate({
-            scrollTop: $("#disqus_thread").offset().top - 150
-        });
+        // $('html,body').animate({
+        //     scrollTop: $("#disqus_thread").offset().top - 150
+        // });
     });
 })
 
