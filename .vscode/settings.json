@@ -5,6 +5,7 @@
         "**/.svn": true,
         "**/.hg": true,
         "**/.DS_Store": true,
-        "**/elm-stuff/**":true
+        "**/elm-stuff/**":true,
+        "node_modules/":true
     }
 }

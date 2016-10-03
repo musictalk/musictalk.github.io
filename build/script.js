@@ -34,7 +34,7 @@ app.ports.loadSongComments.subscribe(function (idUrlTitleIndex) {
             }
         });
         $('html,body').animate({
-            scrollTop: $("#disqus_thread").offset().top - 50
+            scrollTop: $("#disqus_thread").offset().top - 150
         });
     });
 })

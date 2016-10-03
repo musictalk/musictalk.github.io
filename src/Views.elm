@@ -5,6 +5,7 @@ import Html.Events exposing (onClick)
 import Html.Attributes exposing (class, id, attribute, href, type', src, width, height, alt)
 import Model exposing (..)
 
+
 navView : Model -> Html Msg
 navView model =
     nav [ class "navbar navbar-default navbar-custom navbar-fixed-top", id "mainNav" ]
@@ -48,21 +49,21 @@ spotifyBigLoginView =
         --                     [ text "Log to spotify" ]
         --               ]
         --       ]
-            [ div [ class "row" ]
-                [ div [ class "col-lg-12 text-center" ]
-                    [ h2 [ class "section-heading" ]
-                        [ text "Connect to Spotify" ]
-                    , p [] [ text "Link your account to display your playlists" ]
-                    , h3 [ class "section-subheading text-muted" ]
-                        [ button
-                            [ onClick StartSpotifyLogin
-                            , class "btn btn-primary btn-lg"
-                            ]
-                            [ text "Login" ]
+        [ div [ class "row" ]
+            [ div [ class "col-lg-12 text-center" ]
+                [ h2 [ class "section-heading" ]
+                    [ text "Connect to Spotify" ]
+                , p [] [ text "Link your account to display your playlists" ]
+                , h3 [ class "section-subheading text-muted" ]
+                    [ button
+                        [ onClick StartSpotifyLogin
+                        , class "btn btn-primary btn-lg"
                         ]
+                        [ text "Login" ]
                     ]
                 ]
-            -- ]
+            ]
+          -- ]
         ]
 
 
@@ -95,37 +96,55 @@ userProfile model =
             spotifyLoginView
 
 
-viewSong : Int -> SpotifyPlaylist -> Song -> Maybe SongId -> List(Html Msg)
+viewSong : Int -> SpotifyPlaylist -> Song -> Maybe SongId -> List (Html Msg)
 viewSong i p song selectedSong =
-    tr []
-        [ th [ id <| song.id, attribute "scope" "row" ] [ text (toString <| i+1) ]
-        , td [] [ text song.name ]
-        , td [] [ text song.artist ]
-        , td [] [ text song.album ]
-        -- , td [] [ a [href (song.href ++ "#disqus_thread"), attribute "data-disqus-identifier" song.id] [text song.id] ]
-        , td []
-             [ {-span [ href (playlistSongUrl p s)
-                    , attribute "data-disqus-identifier" (p.id ++ "/" ++ song.id)
-                    ] [text song.id]
-             , -}button [ onClick (LoadSongComments p song) ] [ text "comments" ] 
-             ]
-        ]
-    :: case selectedSong of
-        Just selId -> if song.id /= selId
-                   then []
-                   else [ tr []
-                            [ td [ attribute "colspan" "5"]
-                                [ div [ id "disqus_thread" ] [] ]
-                            ]
-                        ]
-        _ -> []
-        --     
-        -- else []
+    let
+        isCurrentSong =
+            case selectedSong of
+                Just selId ->
+                    song.id == selId
+
+                _ ->
+                    False
+    in
+        tr
+            (if isCurrentSong then
+                [ class "info" ]
+             else
+                []
+            )
+            [ th [ id <| song.id, attribute "scope" "row" ] [ text (toString <| i + 1) ]
+            , td [] [ text song.name ]
+            , td [] [ text song.artist ]
+            , td [] [ text song.album ]
+              -- , td [] [ a [href (song.href ++ "#disqus_thread"), attribute "data-disqus-identifier" song.id] [text song.id] ]
+            , td []
+                [ {- span [ href (playlistSongUrl p s)
+                            , attribute "data-disqus-identifier" (p.id ++ "/" ++ song.id)
+                            ] [text song.id]
+                     ,
+                  -}
+                  button [ onClick (LoadSongComments p song) ] [ text "comments" ]
+                ]
+            ]
+            :: if isCurrentSong then
+                [ tr []
+                    [ td [ attribute "colspan" "5" ]
+                        [ div [ id "disqus_thread" ] [] ]
+                    ]
+                ]
+               else
+                []
+
 
 playlistUrl : SpotifyPlaylist -> String
-playlistUrl playlist = "#!/user/"++playlist.owner++"/playlist/" ++ playlist.id
+playlistUrl playlist =
+    "#!/user/" ++ playlist.owner ++ "/playlist/" ++ playlist.id
+
+
 playlistSongUrl : SpotifyPlaylist -> SongId -> String
-playlistSongUrl playlist songId = playlistUrl playlist ++ "/song/" ++ songId
+playlistSongUrl playlist songId =
+    playlistUrl playlist ++ "/song/" ++ songId
 
 
 viewPlaylist : SpotifyPlaylist -> Html Msg
@@ -163,25 +182,36 @@ viewPlaylist playlist =
 
 viewPlayLists : List SpotifyPlaylist -> Html Msg
 viewPlayLists playlists =
-    let mapPlaylist = \i p ->
-        List.concat [ [viewPlaylist p]
-                    , (if (i+1) % 3 == 0 then [ div [ class "clearfix visible-md-block visible-lg-block"] []] else [])
-                    , (if (i+1) % 2 == 0 then [ div [ class "clearfix visible-sm-block"] []] else [])
+    let
+        mapPlaylist =
+            \i p ->
+                List.concat
+                    [ [ viewPlaylist p ]
+                    , (if (i + 1) % 3 == 0 then
+                        [ div [ class "clearfix visible-md-block visible-lg-block" ] [] ]
+                       else
+                        []
+                      )
+                    , (if (i + 1) % 2 == 0 then
+                        [ div [ class "clearfix visible-sm-block" ] [] ]
+                       else
+                        []
+                      )
                     ]
     in
-    section [ class "bg-light-gray", id "portfolio" ]
-        [ div [ class "container" ]
-            [ div [ class "row" ]
-                [ div [ class "col-lg-12 text-center" ]
-                    [ h2 [ class "section-heading" ]
-                        [ text "Playlists" ]
-                    , h3 [ class "section-subheading text-muted" ]
-                        [ text "Public and private" ]
+        section [ class "bg-light-gray", id "portfolio" ]
+            [ div [ class "container" ]
+                [ div [ class "row" ]
+                    [ div [ class "col-lg-12 text-center" ]
+                        [ h2 [ class "section-heading" ]
+                            [ text "Playlists" ]
+                        , h3 [ class "section-subheading text-muted" ]
+                            [ text "Public and private" ]
+                        ]
                     ]
+                , div [ class "row" ] ((List.concatMap identity << List.indexedMap mapPlaylist) playlists)
                 ]
-            , div [ class "row" ] ((List.concatMap identity << List.indexedMap mapPlaylist) playlists)
             ]
-        ]
 
 
 headerView : Model -> Html Msg
@@ -193,8 +223,8 @@ headerView model =
                     [ text "discuss playlists" ]
                 , div [ class "intro-lead-in" ]
                     [ text "(and ask for more)" ]
-                -- , a [ class "page-scroll btn btn-xl", href "#services" ]
-                --     [ text "Tell Me More" ]
+                  -- , a [ class "page-scroll btn btn-xl", href "#services" ]
+                  --     [ text "Tell Me More" ]
                 ]
             ]
         ]
@@ -208,37 +238,45 @@ content model =
 
         LoggedIn token user ->
             case model.page of
-                IndexData playlists -> viewPlayLists playlists
-            -- h1 [] [ text "playlists" ]
-                    
+                IndexData playlists ->
+                    viewPlayLists playlists
+
+                -- h1 [] [ text "playlists" ]
                 PlaylistDetails playlist selectedSong ->
-                    let _ = Debug.log "selected song" selectedSong in
-                    div [ class "bg-light-gray", id "playlist" ]
+                    let
+                        _ =
+                            Debug.log "selected song" selectedSong
+                    in
+                        div [ class "bg-light-gray", id "playlist" ]
                             [ div [ class "container" ]
                                 -- [ div [ class "row" ]
-                                [ div [ class "jumbotron text-center" ] 
+                                [ div [ class "jumbotron text-center" ]
                                     -- [ div [ class "col-lg-4 col-md-offset-4 text-center" ]
-                                        [ img [ alt "", class "img-responsive center-block img-rounded", src playlist.image ] []
-                                        , h2 [ class "section-heading" ]
-                                            [ text playlist.name ]
-                                        , h3 [ class "section-subheading text-muted" ]
-                                            [ text playlist.owner ]
-                                        ]
-                                    -- ]
+                                    [ img [ alt "", class "img-responsive center-block img-rounded", src playlist.image ] []
+                                    , h2 [ class "section-heading" ]
+                                        [ text playlist.name ]
+                                    , h3 [ class "section-subheading text-muted" ]
+                                        [ text playlist.owner ]
+                                    ]
+                                  -- ]
                                 , div []
-                                -- , div [ class "row" ]
+                                    -- , div [ class "row" ]
                                     --   [ div [class "col-lg-6 col-md-offset-3"]
-                                        [ table [ class "table table-condensed table-striped" ]
-                                                [ thead [] [ tr [] [ th [] [text "#"], th [] [text "Title"], th [] [text "Artist"], th [] [text "Album"], th [] []]]
-                                                , tbody [] (List.indexedMap (\i song -> viewSong i playlist song selectedSong) playlist.songs |> List.concat)
-                                                ]
-                                        , node "script" [ attribute "type" "text/javascript" ] [ text "setupTables();" ]
+                                    [ table [ class "table table-condensed table-striped" ]
+                                        [ thead [] [ tr [] [ th [] [ text "#" ], th [] [ text "Title" ], th [] [ text "Artist" ], th [] [ text "Album" ], th [] [] ] ]
+                                        , tbody [] (List.indexedMap (\i song -> viewSong i playlist song selectedSong) playlist.songs |> List.concat)
                                         ]
-                                    --   ]
+                                    , node "script" [ attribute "type" "text/javascript" ] [ text "setupTables();" ]
+                                    ]
+                                  --   ]
                                 ]
                             ]
-                PlaylistReq _ _ _ -> text "ERROR"
-        _ -> div [] [ text (toString model) ]
+
+                PlaylistReq _ _ _ ->
+                    text "ERROR"
+
+        _ ->
+            div [] [ text (toString model) ]
 
 
 view : Model -> Html Msg
@@ -268,32 +306,32 @@ footerView =
                                     []
                                 ]
                             ]
-                        -- , li []
-                        --     [ a [ href "#" ]
-                        --         [ i [ class "fa fa-facebook" ]
-                        --             []
-                        --         ]
-                        --     ]
-                        -- , li []
-                        --     [ a [ href "#" ]
-                        --         [ i [ class "fa fa-linkedin" ]
-                        --             []
-                        --         ]
-                        --     ]
+                          -- , li []
+                          --     [ a [ href "#" ]
+                          --         [ i [ class "fa fa-facebook" ]
+                          --             []
+                          --         ]
+                          --     ]
+                          -- , li []
+                          --     [ a [ href "#" ]
+                          --         [ i [ class "fa fa-linkedin" ]
+                          --             []
+                          --         ]
+                          --     ]
                         ]
                     ]
-                -- , div [ class "col-md-4" ]
-                --     [ ul [ class "list-inline quicklinks" ]
-                --         [ li []
-                --             [ a [ href "#" ]
-                --                 [ text "Privacy Policy" ]
-                --             ]
-                --         , li []
-                --             [ a [ href "#" ]
-                --                 [ text "Terms of Use" ]
-                --             ]
-                --         ]
-                --     ]
+                  -- , div [ class "col-md-4" ]
+                  --     [ ul [ class "list-inline quicklinks" ]
+                  --         [ li []
+                  --             [ a [ href "#" ]
+                  --                 [ text "Privacy Policy" ]
+                  --             ]
+                  --         , li []
+                  --             [ a [ href "#" ]
+                  --                 [ text "Terms of Use" ]
+                  --             ]
+                  --         ]
+                  --     ]
                 ]
             ]
         ]

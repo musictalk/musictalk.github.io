@@ -10233,11 +10233,22 @@ var _user$project$Views$viewPlayLists = function (playlists) {
 };
 var _user$project$Views$viewSong = F4(
 	function (i, p, song, selectedSong) {
+		var isCurrentSong = function () {
+			var _p1 = selectedSong;
+			if (_p1.ctor === 'Just') {
+				return _elm_lang$core$Native_Utils.eq(song.id, _p1._0);
+			} else {
+				return false;
+			}
+		}();
 		return A2(
 			_elm_lang$core$List_ops['::'],
 			A2(
 				_elm_lang$html$Html$tr,
-				_elm_lang$core$Native_List.fromArray(
+				isCurrentSong ? _elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('active')
+					]) : _elm_lang$core$Native_List.fromArray(
 					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
@@ -10296,42 +10307,34 @@ var _user$project$Views$viewSong = F4(
 									]))
 							]))
 					])),
-			function () {
-				var _p1 = selectedSong;
-				if (_p1.ctor === 'Just') {
-					return (!_elm_lang$core$Native_Utils.eq(song.id, _p1._0)) ? _elm_lang$core$Native_List.fromArray(
-						[]) : _elm_lang$core$Native_List.fromArray(
+			isCurrentSong ? _elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$tr,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
+					_elm_lang$core$Native_List.fromArray(
 						[
 							A2(
-							_elm_lang$html$Html$tr,
+							_elm_lang$html$Html$td,
 							_elm_lang$core$Native_List.fromArray(
-								[]),
+								[
+									A2(_elm_lang$html$Html_Attributes$attribute, 'colspan', '5')
+								]),
 							_elm_lang$core$Native_List.fromArray(
 								[
 									A2(
-									_elm_lang$html$Html$td,
+									_elm_lang$html$Html$div,
 									_elm_lang$core$Native_List.fromArray(
 										[
-											A2(_elm_lang$html$Html_Attributes$attribute, 'colspan', '5')
+											_elm_lang$html$Html_Attributes$id('disqus_thread')
 										]),
 									_elm_lang$core$Native_List.fromArray(
-										[
-											A2(
-											_elm_lang$html$Html$div,
-											_elm_lang$core$Native_List.fromArray(
-												[
-													_elm_lang$html$Html_Attributes$id('disqus_thread')
-												]),
-											_elm_lang$core$Native_List.fromArray(
-												[]))
-										]))
+										[]))
 								]))
-						]);
-				} else {
-					return _elm_lang$core$Native_List.fromArray(
-						[]);
-				}
-			}());
+						]))
+				]) : _elm_lang$core$Native_List.fromArray(
+				[]));
 	});
 var _user$project$Views$spotifyLoginView = A2(
 	_elm_lang$html$Html$button,

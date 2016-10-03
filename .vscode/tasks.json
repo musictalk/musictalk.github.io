@@ -9,6 +9,10 @@
     "tasks": [
         {
             "taskName": "test","isTestCommand": true
+        },
+        {
+            "taskName": "build"
         }
+        
     ]
 }
