@@ -124,7 +124,7 @@ viewSong i p song selectedSong =
                             ] [text song.id]
                      ,
                   -}
-                  a [ href "#", onClick (LoadSongComments p song) ]
+                  a [ class "commentsLink", onClick (LoadSongComments p song) ]
                     [ span [ class "glyphicon glyphicon-comment" ] []
                     , span
                         [ class "disqus-comment-count"

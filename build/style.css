@@ -1,3 +1,7 @@
 .disqus-comment-count {
     margin-left: 10px;
 }
+
+a.commentsLink:hover {
+ cursor:pointer;
+}

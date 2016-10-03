@@ -10298,7 +10298,7 @@ var _user$project$Views$viewSong = F4(
 								_elm_lang$html$Html$a,
 								_elm_lang$core$Native_List.fromArray(
 									[
-										_elm_lang$html$Html_Attributes$href('#'),
+										_elm_lang$html$Html_Attributes$class('commentsLink'),
 										_elm_lang$html$Html_Events$onClick(
 										A2(_user$project$Model$LoadSongComments, p, song))
 									]),
