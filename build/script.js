@@ -40,7 +40,7 @@ app.ports.loadSongComments.subscribe(function (idUrlTitleIndex) {
 })
 
 app.ports.storeToken.subscribe(function (token) {
-    // console.log("token", token);
+    console.log("token", token);
     window.localStorage.setItem("token", token);
     app.ports.answerToken.send(token);
 })

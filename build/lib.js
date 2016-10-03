@@ -9880,7 +9880,8 @@ var _user$project$Spotify$loginUrl = function (returnUri) {
 				_0: 'redirect_uri',
 				_1: A2(_elm_lang$core$Basics_ops['++'], returnUri, '/index.html')
 			},
-				{ctor: '_Tuple2', _0: 'scope', _1: 'playlist-read-private'}
+				{ctor: '_Tuple2', _0: 'scope', _1: 'playlist-read-private'},
+				{ctor: '_Tuple2', _0: 'show_dialog', _1: 'true'}
 			]));
 };
 var _user$project$Spotify$playlistId = function (playlist) {

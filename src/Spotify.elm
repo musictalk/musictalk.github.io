@@ -26,6 +26,7 @@ loginUrl returnUri =
         , ("response_type","token")
         , ("redirect_uri", returnUri ++ "/index.html")
         , ("scope", "playlist-read-private")
+        , ("show_dialog", "true")
         ]
 
 get : SpotifyToken -> Decoder value -> String -> Task Error value
