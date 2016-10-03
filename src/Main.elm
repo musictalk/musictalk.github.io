@@ -58,7 +58,7 @@ init flags page =
             { flags = flags, state = Unlogged, page = IndexData [] } ! [ queryToken () ]
 
         Ok (Playlist uid pid song) ->
-            { flags = flags, state = Unlogged, page = PlaylistDetails (Err (uid, pid, song)) } ! [ queryToken () ]
+            { flags = flags, state = Unlogged, page = PlaylistReq uid pid song } ! [ queryToken () ]
 
         -- Err e ->
         --     Routing.urlUpdate page { flags = flags, state = Unlogged, page = IndexData [] }
@@ -92,13 +92,13 @@ pageCmd : SpotifyToken -> Model -> List (Cmd Msg)
 pageCmd token model =
     case model.page of
         IndexData _ -> [ Spotify.getPlaylists token ]
-        PlaylistDetails (Err(uid, pid, song)) ->
+        PlaylistReq uid pid song ->
             let needFetchTracks = case model.page of
-                PlaylistDetails(Ok (playlist, _)) -> playlist.id /= pid
+                PlaylistDetails playlist _ -> playlist.id /= pid
                 _ -> True
             in
               if needFetchTracks then [ Spotify.getPlaylistTracks token uid pid ] else []
-        PlaylistDetails (Ok _) -> []
+        PlaylistDetails _ _ -> []
         -- _ -> Debug.crash "pageCmd" p
 
 
@@ -108,8 +108,8 @@ sense.
 -}
 urlUpdate : Result String Page -> Model -> (Model, Cmd Msg)
 urlUpdate result model =
---   case fst <| Debug.log "urlUpdate/model" (result, model) of
-  case result of
+  case fst <| Debug.log "urlUpdate/model" (result, model) of
+--   case result of
     -- Ok (Playlist uid pid) -> model ! [Spotify.getPlaylistTracks "" uid pid]
     Ok page ->
       case model.state of
@@ -126,7 +126,7 @@ urlUpdate result model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    -- let _ = Debug.log "model" model in
+    let _ = Debug.log "update/model" (msg,model) in
         case msg {- Debug.log "update" msg -} of
             StartSpotifyLogin ->
                 model ! [ redirect <| Spotify.loginUrl model.flags.location ]
@@ -152,7 +152,7 @@ update msg model =
             ReceiveTracks (Ok pl) ->
               let _ = Debug.log "ReceiveTracks model" model in
               case model.page of
-                PlaylistDetails (Err(_,_,songId)) -> { model | page = PlaylistDetails (Ok (pl, songId)) }
+                PlaylistReq _ _ songId -> { model | page = PlaylistDetails pl songId }
                  ! case songId of
                     Nothing -> []
                     Just jSongId -> [ loadSongComments <| (,,,)

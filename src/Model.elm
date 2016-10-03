@@ -12,10 +12,11 @@ type alias QueryString =  { token : String, tokenType : String, expiration : Str
 
 type Page = Index
           | LoginResult QueryString
-          | Playlist String String (Maybe String)
+          | Playlist UserId PlaylistId (Maybe SongId)
 
 type PageData = IndexData (List SpotifyPlaylist)
-              | PlaylistDetails (Result (String, String, Maybe String) (SpotifyPlaylist, Maybe String))
+              | PlaylistReq UserId PlaylistId (Maybe SongId)
+              | PlaylistDetails SpotifyPlaylist (Maybe SongId)
               -- | LoginResultData QueryString 
 
 type LoginState = Unlogged

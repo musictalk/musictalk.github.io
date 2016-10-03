@@ -211,7 +211,7 @@ content model =
                 IndexData playlists -> viewPlayLists playlists
             -- h1 [] [ text "playlists" ]
                     
-                PlaylistDetails (Ok (playlist,selectedSong)) ->
+                PlaylistDetails playlist selectedSong ->
                     let _ = Debug.log "selected song" selectedSong in
                     div [ class "bg-light-gray", id "playlist" ]
                             [ div [ class "container" ]
@@ -237,7 +237,7 @@ content model =
                                     --   ]
                                 ]
                             ]
-                PlaylistDetails (Err _) -> text "ERROR"
+                PlaylistReq _ _ _ -> text "ERROR"
         _ -> div [] [ text (toString model) ]
 
 
