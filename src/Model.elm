@@ -71,6 +71,7 @@ type Msg
   | ReceiveTracks (Result Http.Error SpotifyPlaylist)
   | LoadPlaylistComments SpotifyPlaylist
   | LoadSongComments SpotifyPlaylist Song
+  | Logout
 
 dumpUpdate : Msg -> String
 dumpUpdate update = case update of
@@ -85,6 +86,7 @@ dumpUpdate update = case update of
     ReceiveTracks _ -> "ReceiveTracks"
     LoadPlaylistComments _ -> "LoadPlaylistComments"
     LoadSongComments _ _ -> "LoadSongComments"
+    Logout -> "Logout"
 
 dumpModel : Model -> ( String, String )
 dumpModel model = 

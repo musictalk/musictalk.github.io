@@ -190,7 +190,7 @@ update msg model =
 
             SpotifyResponse ( _, SpotifyError error ) ->
                 case error of
-                    Http.BadResponse 401 s ->
+                    Http.BadResponse _ s ->
                         ( { model | state = Unlogged }
                         , redirect <| Spotify.loginUrl model.flags.location
                         )
@@ -224,7 +224,7 @@ update msg model =
 
             LoadSongComments pl song ->
                 model ! [ Navigation.newUrl (Views.playlistSongUrl pl song.id) ]
-
+            Logout -> { model | state = Unlogged } ! [ storeToken "" ]
             _ ->
                 -- let
                 --     x =

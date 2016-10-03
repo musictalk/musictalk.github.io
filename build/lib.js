@@ -9599,8 +9599,10 @@ var _user$project$Model$dumpUpdate = function (update) {
 			return 'ReceiveTracks';
 		case 'LoadPlaylistComments':
 			return 'LoadPlaylistComments';
-		default:
+		case 'LoadSongComments':
 			return 'LoadSongComments';
+		default:
+			return 'Logout';
 	}
 };
 var _user$project$Model$dump = F2(
@@ -9670,6 +9672,7 @@ var _user$project$Model$SpotifyPlaylists = function (a) {
 var _user$project$Model$SpotifyUser = function (a) {
 	return {ctor: 'SpotifyUser', _0: a};
 };
+var _user$project$Model$Logout = {ctor: 'Logout'};
 var _user$project$Model$LoadSongComments = F2(
 	function (a, b) {
 		return {ctor: 'LoadSongComments', _0: a, _1: b};
@@ -10402,7 +10405,17 @@ var _user$project$Views$userProfile = function (model) {
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[])),
-							_elm_lang$html$Html$text(_p3.name)
+							_elm_lang$html$Html$text(_p3.name),
+							A2(
+							_elm_lang$html$Html$a,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Events$onClick(_user$project$Model$Logout)
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text('Logout')
+								]))
 						]))
 				]));
 	} else {
@@ -10623,17 +10636,6 @@ var _user$project$Views$content = function (model) {
 																		return A4(_user$project$Views$viewSong, i, _p7, song, _p8);
 																	}),
 																_p7.songs)))
-													])),
-												A3(
-												_elm_lang$html$Html$node,
-												'script',
-												_elm_lang$core$Native_List.fromArray(
-													[
-														A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text/javascript')
-													]),
-												_elm_lang$core$Native_List.fromArray(
-													[
-														_elm_lang$html$Html$text('setupTables();')
 													]))
 											])),
 										A3(
@@ -11115,6 +11117,16 @@ var _user$project$Main$urlUpdate = F2(
 			};
 		}
 	});
+var _user$project$Main$playlistsLoaded = _elm_lang$core$Native_Platform.outgoingPort(
+	'playlistsLoaded',
+	function (v) {
+		return v;
+	});
+var _user$project$Main$storeToken = _elm_lang$core$Native_Platform.outgoingPort(
+	'storeToken',
+	function (v) {
+		return v;
+	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p10 = A2(
@@ -11122,7 +11134,7 @@ var _user$project$Main$update = F2(
 			'update/model',
 			A2(_user$project$Model$dump, msg, model));
 		var _p11 = msg;
-		_v5_9:
+		_v5_10:
 		do {
 			switch (_p11.ctor) {
 				case 'StartSpotifyLogin':
@@ -11173,7 +11185,7 @@ var _user$project$Main$update = F2(
 										[]));
 							default:
 								var _p13 = _p11._0._1._0;
-								if ((_p13.ctor === 'BadResponse') && (_p13._0 === 401)) {
+								if (_p13.ctor === 'BadResponse') {
 									return {
 										ctor: '_Tuple2',
 										_0: _elm_lang$core$Native_Utils.update(
@@ -11194,7 +11206,7 @@ var _user$project$Main$update = F2(
 								}
 						}
 					} else {
-						break _v5_9;
+						break _v5_10;
 					}
 				case 'ReceiveTracks':
 					if (_p11._0.ctor === 'Ok') {
@@ -11258,8 +11270,18 @@ var _user$project$Main$update = F2(
 								_elm_lang$navigation$Navigation$newUrl(
 								A2(_user$project$Views$playlistSongUrl, _p11._0, _p11._1.id))
 							]));
+				case 'Logout':
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{state: _user$project$Model$Unlogged}),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_user$project$Main$storeToken('')
+							]));
 				default:
-					break _v5_9;
+					break _v5_10;
 			}
 		} while(false);
 		return _elm_lang$core$Native_Utils.crashCase(
@@ -11270,16 +11292,6 @@ var _user$project$Main$update = F2(
 			},
 			_p11)(
 			_elm_lang$core$Basics$toString(msg));
-	});
-var _user$project$Main$playlistsLoaded = _elm_lang$core$Native_Platform.outgoingPort(
-	'playlistsLoaded',
-	function (v) {
-		return v;
-	});
-var _user$project$Main$storeToken = _elm_lang$core$Native_Platform.outgoingPort(
-	'storeToken',
-	function (v) {
-		return v;
 	});
 var _user$project$Main$queryToken = _elm_lang$core$Native_Platform.outgoingPort(
 	'queryToken',

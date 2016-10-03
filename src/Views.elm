@@ -37,18 +37,6 @@ navView model =
 spotifyBigLoginView : Html Msg
 spotifyBigLoginView =
     section [ class "bg-light-gray", id "team" ]
-        -- [ div [ class "container" ]
-        --       [
-        --           div [ class "jumbotron"]
-        --               [ h1 [] [ text "connect to spotify"]
-        --               , p [] [ text "connect to spotify" ]
-        --               , button
-        --                     [ onClick StartSpotifyLogin
-        --                     , class "btn btn-primary btn-lg btn-block"
-        --                     ]
-        --                     [ text "Log to spotify" ]
-        --               ]
-        --       ]
         [ div [ class "row" ]
             [ div [ class "col-lg-12 text-center" ]
                 [ h2 [ class "section-heading" ]
@@ -63,7 +51,6 @@ spotifyBigLoginView =
                     ]
                 ]
             ]
-          -- ]
         ]
 
 
@@ -88,8 +75,8 @@ userProfile model =
                     [ p [ class "navbar-text" ]
                         [ Html.img [ src imgSrc, class "img-circle", width 30 ] []
                         , text user.name
+                        , a [ onClick Logout ] [ text "Logout" ]
                         ]
-                      --   , div [] (List.map (\x -> Html.img [src x, class "img-circle img-responsive",  width 30] []) user.photo)
                     ]
 
         _ ->
@@ -117,14 +104,8 @@ viewSong i p song selectedSong =
             , td [] [ text song.name ]
             , td [] [ text song.artist ]
             , td [] [ text song.album ]
-              -- , td [] [ a [href (song.href ++ "#disqus_thread"), attribute "data-disqus-identifier" song.id] [text song.id] ]
             , td []
-                [ {- span [ href (playlistSongUrl p s)
-                            , attribute "data-disqus-identifier" (p.id ++ "/" ++ song.id)
-                            ] [text song.id]
-                     ,
-                  -}
-                  a [ class "commentsLink", onClick (LoadSongComments p song) ]
+                [ a [ class "commentsLink", onClick (LoadSongComments p song) ]
                     [ span [ class "glyphicon glyphicon-comment" ] []
                     , span
                         [ class "disqus-comment-count"
@@ -165,7 +146,6 @@ viewPlaylist playlist =
                     ]
                 ]
             , img [ alt "", class "img-responsive", src playlist.image ]
-                --, width 360, height 360 ]
                 []
             ]
         , div [ class "portfolio-caption" ]
@@ -220,8 +200,6 @@ headerView model =
                     [ text "discuss playlists" ]
                 , div [ class "intro-lead-in" ]
                     [ text "(and ask for more)" ]
-                  -- , a [ class "page-scroll btn btn-xl", href "#services" ]
-                  --     [ text "Tell Me More" ]
                 ]
             ]
         ]
@@ -246,27 +224,20 @@ content model =
                     in
                         div [ class "bg-light-gray", id "playlist" ]
                             [ div [ class "container" ]
-                                -- [ div [ class "row" ]
                                 [ div [ class "jumbotron text-center" ]
-                                    -- [ div [ class "col-lg-4 col-md-offset-4 text-center" ]
                                     [ img [ alt "", class "img-responsive center-block img-rounded", src playlist.image ] []
                                     , h2 [ class "section-heading" ]
                                         [ text playlist.name ]
                                     , h3 [ class "section-subheading text-muted" ]
                                         [ text playlist.owner ]
                                     ]
-                                  -- ]
                                 , div []
-                                    -- , div [ class "row" ]
-                                    --   [ div [class "col-lg-6 col-md-offset-3"]
                                     [ table [ class "table table-condensed table-striped" ]
                                         [ thead [] [ tr [] [ th [] [ text "#" ], th [] [ text "Title" ], th [] [ text "Artist" ], th [] [ text "Album" ], th [] [] ] ]
                                         , tbody [] (List.indexedMap (\i song -> viewSong i playlist song selectedSong) playlist.songs |> List.concat)
                                         ]
-                                    , node "script" [ attribute "type" "text/javascript" ] [ text "setupTables();" ]
                                     ]
                                 , node "script" [ attribute "type" "text/javascript" ] [ text "DISQUSWIDGETS.getCount({reset: true});" ]
-                                  --   ]
                                 ]
                             ]
 
@@ -304,47 +275,8 @@ footerView =
                                     []
                                 ]
                             ]
-                          -- , li []
-                          --     [ a [ href "#" ]
-                          --         [ i [ class "fa fa-facebook" ]
-                          --             []
-                          --         ]
-                          --     ]
-                          -- , li []
-                          --     [ a [ href "#" ]
-                          --         [ i [ class "fa fa-linkedin" ]
-                          --             []
-                          --         ]
-                          --     ]
                         ]
                     ]
-                  -- , div [ class "col-md-4" ]
-                  --     [ ul [ class "list-inline quicklinks" ]
-                  --         [ li []
-                  --             [ a [ href "#" ]
-                  --                 [ text "Privacy Policy" ]
-                  --             ]
-                  --         , li []
-                  --             [ a [ href "#" ]
-                  --                 [ text "Terms of Use" ]
-                  --             ]
-                  --         ]
-                  --     ]
                 ]
             ]
         ]
-
-
-
---   case model.state of
---     Unlogged -> spotifyLoginView
---     GotToken token -> div [] [ text (toString model), text token ]
---     LoggedIn (token, user, playlists) ->
---       div []
---         [ div [ Html.Attributes.id "disqussions_wrapper" ] []
---         , Html.ul []
---             [ Html.li [] [text token]
---             , Html.li [] [userProfile user]
---             ]
---         , Html.ul [] (List.map viewPlaylist playlists)
---         ]
