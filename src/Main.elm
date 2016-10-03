@@ -27,7 +27,7 @@ port redirect : String -> Cmd msg
 
 
 port loadComments : SpotifyPlaylist -> Cmd msg
-port loadSongComments : (String,String,String) -> Cmd msg
+port loadSongComments : (String,String,String,Int) -> Cmd msg
 
 port playlistsLoaded : String -> Cmd msg
 
@@ -88,11 +88,16 @@ stateCmd s =
     Unlogged -> Debug.crash "Unlogged in state cmd"
 
 
-pageCmd : SpotifyToken -> PageData -> List (Cmd Msg)
-pageCmd token p =
-    case p of
+pageCmd : SpotifyToken -> Model -> List (Cmd Msg)
+pageCmd token model =
+    case model.page of
         IndexData _ -> [ Spotify.getPlaylists token ]
-        PlaylistDetails (Err(uid, pid, song)) -> [ Spotify.getPlaylistTracks token uid pid ]
+        PlaylistDetails (Err(uid, pid, song)) ->
+            let needFetchTracks = case model.page of
+                PlaylistDetails(Ok (playlist, _)) -> playlist.id /= pid
+                _ -> True
+            in
+              if needFetchTracks then [ Spotify.getPlaylistTracks token uid pid ] else []
         PlaylistDetails (Ok _) -> []
         -- _ -> Debug.crash "pageCmd" p
 
@@ -103,17 +108,18 @@ sense.
 -}
 urlUpdate : Result String Page -> Model -> (Model, Cmd Msg)
 urlUpdate result model =
-  case Debug.log "urlUpdate" result of
+--   case fst <| Debug.log "urlUpdate/model" (result, model) of
+  case result of
     -- Ok (Playlist uid pid) -> model ! [Spotify.getPlaylistTracks "" uid pid]
     Ok page ->
       case model.state of
         Unlogged -> Debug.crash "unlogged" model
         LoggedIn token _ -> 
           let m = {model | page = Routing.pageToData page } in
-          m ! (stateCmd m.state :: pageCmd token m.page)
+          m ! (stateCmd m.state :: pageCmd token model)
         GotToken token ->
           let m = {model | page = Routing.pageToData page } in
-          m ! (stateCmd m.state :: pageCmd token m.page)
+          m ! (stateCmd m.state :: pageCmd token model)
 
     Err _ ->
       (model, Navigation.modifyUrl "#")
@@ -127,22 +133,14 @@ update msg model =
 
             QueryCachedToken token ->
               let m = { model | state = GotToken token } in
-              m ! (stateCmd m.state :: pageCmd token m.page)
+              m ! (stateCmd m.state :: pageCmd token m)
 
             SpotifyResponse ( token, SpotifyUser userData ) ->
                 { model | state = LoggedIn token userData } ! [ Cmd.none ]
 
             SpotifyResponse (token, SpotifyPlaylists data) ->
                 { model | page = IndexData data } ! []
-            --   case model.state of
-            --     GotToken r -> { model | state = LoggedIn(r, Nothing, data) } ! []-- [ Spotify.getUserInfo token, Spotify.getPlaylists r ]
-            --     LoggedIn(t,u,_) ->
-            --       ( {model | state = LoggedIn (t, u, data) }
-            --       , playlistsLoaded ""
-            --       )
-            --     _ -> Debug.crash (toString (model,msg))
-            --   -- ((LoggedIn (t, u, data)), Cmd.none)
-            --   -- (LoggedIn (t,u,[]), Cmd.none)
+                
             SpotifyResponse (_, SpotifyError error) ->
               case error of
                 Http.BadResponse 401 s ->
@@ -150,35 +148,27 @@ update msg model =
                   , redirect <| Spotify.loginUrl model.flags.location
                   )
                 _ -> Debug.crash (toString msg)
-            -- LoadPlaylist p ->
-            --   case model.state of
-            --     LoggedIn(t,u,d) ->
-            --       ( {model | state = LoggedIn (t, u, d) }
-            --       , Spotify.getPlaylistTracks t p.owner p.id
-            --       )
-            --     _ -> Debug.crash (toString (model,msg))
+                
             ReceiveTracks (Ok pl) ->
               let _ = Debug.log "ReceiveTracks model" model in
               case model.page of
                 PlaylistDetails (Err(_,_,songId)) -> { model | page = PlaylistDetails (Ok (pl, songId)) }
                  ! case songId of
                     Nothing -> []
-                    Just jSongId -> [ loadSongComments <| (,,) (pl.id ++ "/" ++ jSongId) (Views.playlistSongUrl pl jSongId) jSongId]
+                    Just jSongId -> [ loadSongComments <| (,,,)
+                        (pl.id ++ "/" ++ jSongId)
+                        (Views.playlistSongUrl pl jSongId)
+                        jSongId
+                        1]
                  
                 _ -> Debug.crash "WTF"
             ReceiveTracks (Err _) ->
               model  ! []
-            --   case (res, model.state) of
-            --     (Ok playlist, LoggedIn(t,u,d)) ->
-            --       let dd = List.map (\p -> if p.id == playlist.id then playlist else p) d in
-            --       ( {model | state = LoggedIn (t, u, dd) }
-            --       , Cmd.none
-            --       )
-            --     _ -> Debug.crash (toString (model,msg))
+              
             LoadPlaylistComments p ->
                 ( model, loadComments p )
             LoadSongComments pl song -> model ! [ Navigation.newUrl (Views.playlistSongUrl pl song.id) ]
-                -- [ loadSongComments <| (,,) (pl.id ++ "/" ++ song.id) (Views.playlistSongUrl pl song) song.name]
+            
             _ ->
                 -- let
                 --     x =

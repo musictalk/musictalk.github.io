@@ -10162,7 +10162,7 @@ var _user$project$Views$viewPlayLists = function (playlists) {
 			]));
 };
 var _user$project$Views$viewSong = F4(
-	function (i, p, s, selectedSong) {
+	function (i, p, song, selectedSong) {
 		return A2(
 			_elm_lang$core$List_ops['::'],
 			A2(
@@ -10175,6 +10175,7 @@ var _user$project$Views$viewSong = F4(
 						_elm_lang$html$Html$th,
 						_elm_lang$core$Native_List.fromArray(
 							[
+								_elm_lang$html$Html_Attributes$id(song.id),
 								A2(_elm_lang$html$Html_Attributes$attribute, 'scope', 'row')
 							]),
 						_elm_lang$core$Native_List.fromArray(
@@ -10188,7 +10189,7 @@ var _user$project$Views$viewSong = F4(
 							[]),
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$html$Html$text(s.name)
+								_elm_lang$html$Html$text(song.name)
 							])),
 						A2(
 						_elm_lang$html$Html$td,
@@ -10196,7 +10197,7 @@ var _user$project$Views$viewSong = F4(
 							[]),
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$html$Html$text(s.artist)
+								_elm_lang$html$Html$text(song.artist)
 							])),
 						A2(
 						_elm_lang$html$Html$td,
@@ -10204,7 +10205,7 @@ var _user$project$Views$viewSong = F4(
 							[]),
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$html$Html$text(s.album)
+								_elm_lang$html$Html$text(song.album)
 							])),
 						A2(
 						_elm_lang$html$Html$td,
@@ -10217,7 +10218,7 @@ var _user$project$Views$viewSong = F4(
 								_elm_lang$core$Native_List.fromArray(
 									[
 										_elm_lang$html$Html_Events$onClick(
-										A2(_user$project$Model$LoadSongComments, p, s))
+										A2(_user$project$Model$LoadSongComments, p, song))
 									]),
 								_elm_lang$core$Native_List.fromArray(
 									[
@@ -10228,7 +10229,7 @@ var _user$project$Views$viewSong = F4(
 			function () {
 				var _p1 = selectedSong;
 				if (_p1.ctor === 'Just') {
-					return (!_elm_lang$core$Native_Utils.eq(s.id, _p1._0)) ? _elm_lang$core$Native_List.fromArray(
+					return (!_elm_lang$core$Native_Utils.eq(song.id, _p1._0)) ? _elm_lang$core$Native_List.fromArray(
 						[]) : _elm_lang$core$Native_List.fromArray(
 						[
 							A2(
@@ -10836,8 +10837,8 @@ var _user$project$Routing$toUrl = function (count) {
 };
 
 var _user$project$Main$pageCmd = F2(
-	function (token, p) {
-		var _p0 = p;
+	function (token, model) {
+		var _p0 = model.page;
 		if (_p0.ctor === 'IndexData') {
 			return _elm_lang$core$Native_List.fromArray(
 				[
@@ -10845,10 +10846,20 @@ var _user$project$Main$pageCmd = F2(
 				]);
 		} else {
 			if (_p0._0.ctor === 'Err') {
-				return _elm_lang$core$Native_List.fromArray(
+				var _p2 = _p0._0._0._1;
+				var needFetchTracks = function () {
+					var _p1 = model.page;
+					if (((_p1.ctor === 'PlaylistDetails') && (_p1._0.ctor === 'Ok')) && (_p1._0._0.ctor === '_Tuple2')) {
+						return !_elm_lang$core$Native_Utils.eq(_p1._0._0._0.id, _p2);
+					} else {
+						return true;
+					}
+				}();
+				return needFetchTracks ? _elm_lang$core$Native_List.fromArray(
 					[
-						A3(_user$project$Spotify$getPlaylistTracks, token, _p0._0._0._0, _p0._0._0._1)
-					]);
+						A3(_user$project$Spotify$getPlaylistTracks, token, _p0._0._0._0, _p2)
+					]) : _elm_lang$core$Native_List.fromArray(
+					[]);
 			} else {
 				return _elm_lang$core$Native_List.fromArray(
 					[]);
@@ -10856,10 +10867,10 @@ var _user$project$Main$pageCmd = F2(
 		}
 	});
 var _user$project$Main$stateCmd = function (s) {
-	var _p1 = s;
-	switch (_p1.ctor) {
+	var _p3 = s;
+	switch (_p3.ctor) {
 		case 'GotToken':
-			return _user$project$Spotify$getUserInfo(_p1._0);
+			return _user$project$Spotify$getUserInfo(_p3._0);
 		case 'LoggedIn':
 			return _elm_lang$core$Platform_Cmd$none;
 		default:
@@ -10869,23 +10880,23 @@ var _user$project$Main$stateCmd = function (s) {
 					start: {line: 85, column: 3},
 					end: {line: 88, column: 52}
 				},
-				_p1)('Unlogged in state cmd');
+				_p3)('Unlogged in state cmd');
 	}
 };
 var _user$project$Main$urlUpdate = F2(
 	function (result, model) {
-		var _p3 = A2(_elm_lang$core$Debug$log, 'urlUpdate', result);
-		if (_p3.ctor === 'Ok') {
-			var _p5 = _p3._0;
-			var _p4 = model.state;
-			switch (_p4.ctor) {
+		var _p5 = result;
+		if (_p5.ctor === 'Ok') {
+			var _p7 = _p5._0;
+			var _p6 = model.state;
+			switch (_p6.ctor) {
 				case 'Unlogged':
 					return A2(
 						_elm_lang$core$Native_Utils.crash(
 							'Main',
 							{
-								start: {line: 110, column: 21},
-								end: {line: 110, column: 32}
+								start: {line: 116, column: 21},
+								end: {line: 116, column: 32}
 							}),
 						'unlogged',
 						model);
@@ -10893,7 +10904,7 @@ var _user$project$Main$urlUpdate = F2(
 					var m = _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							page: _user$project$Routing$pageToData(_p5)
+							page: _user$project$Routing$pageToData(_p7)
 						});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10901,12 +10912,12 @@ var _user$project$Main$urlUpdate = F2(
 						A2(
 							_elm_lang$core$List_ops['::'],
 							_user$project$Main$stateCmd(m.state),
-							A2(_user$project$Main$pageCmd, _p4._0, m.page)));
+							A2(_user$project$Main$pageCmd, _p6._0, model)));
 				default:
 					var m = _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							page: _user$project$Routing$pageToData(_p5)
+							page: _user$project$Routing$pageToData(_p7)
 						});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10914,7 +10925,7 @@ var _user$project$Main$urlUpdate = F2(
 						A2(
 							_elm_lang$core$List_ops['::'],
 							_user$project$Main$stateCmd(m.state),
-							A2(_user$project$Main$pageCmd, _p4._0, m.page)));
+							A2(_user$project$Main$pageCmd, _p6._0, model)));
 			}
 		} else {
 			return {
@@ -10946,14 +10957,14 @@ var _user$project$Main$loadComments = _elm_lang$core$Native_Platform.outgoingPor
 var _user$project$Main$loadSongComments = _elm_lang$core$Native_Platform.outgoingPort(
 	'loadSongComments',
 	function (v) {
-		return [v._0, v._1, v._2];
+		return [v._0, v._1, v._2, v._3];
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p6 = msg;
-		_v4_9:
+		var _p8 = msg;
+		_v5_9:
 		do {
-			switch (_p6.ctor) {
+			switch (_p8.ctor) {
 				case 'StartSpotifyLogin':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10964,11 +10975,11 @@ var _user$project$Main$update = F2(
 								_user$project$Spotify$loginUrl(model.flags.location))
 							]));
 				case 'QueryCachedToken':
-					var _p7 = _p6._0;
+					var _p9 = _p8._0;
 					var m = _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							state: _user$project$Model$GotToken(_p7)
+							state: _user$project$Model$GotToken(_p9)
 						});
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10976,17 +10987,17 @@ var _user$project$Main$update = F2(
 						A2(
 							_elm_lang$core$List_ops['::'],
 							_user$project$Main$stateCmd(m.state),
-							A2(_user$project$Main$pageCmd, _p7, m.page)));
+							A2(_user$project$Main$pageCmd, _p9, m)));
 				case 'SpotifyResponse':
-					if (_p6._0.ctor === '_Tuple2') {
-						switch (_p6._0._1.ctor) {
+					if (_p8._0.ctor === '_Tuple2') {
+						switch (_p8._0._1.ctor) {
 							case 'SpotifyUser':
 								return A2(
 									_elm_lang$core$Platform_Cmd_ops['!'],
 									_elm_lang$core$Native_Utils.update(
 										model,
 										{
-											state: A2(_user$project$Model$LoggedIn, _p6._0._0, _p6._0._1._0)
+											state: A2(_user$project$Model$LoggedIn, _p8._0._0, _p8._0._1._0)
 										}),
 									_elm_lang$core$Native_List.fromArray(
 										[_elm_lang$core$Platform_Cmd$none]));
@@ -10996,13 +11007,13 @@ var _user$project$Main$update = F2(
 									_elm_lang$core$Native_Utils.update(
 										model,
 										{
-											page: _user$project$Model$IndexData(_p6._0._1._0)
+											page: _user$project$Model$IndexData(_p8._0._1._0)
 										}),
 									_elm_lang$core$Native_List.fromArray(
 										[]));
 							default:
-								var _p8 = _p6._0._1._0;
-								if ((_p8.ctor === 'BadResponse') && (_p8._0 === 401)) {
+								var _p10 = _p8._0._1._0;
+								if ((_p10.ctor === 'BadResponse') && (_p10._0 === 401)) {
 									return {
 										ctor: '_Tuple2',
 										_0: _elm_lang$core$Native_Utils.update(
@@ -11015,23 +11026,23 @@ var _user$project$Main$update = F2(
 									return _elm_lang$core$Native_Utils.crashCase(
 										'Main',
 										{
-											start: {line: 147, column: 15},
-											end: {line: 152, column: 48}
+											start: {line: 145, column: 15},
+											end: {line: 150, column: 48}
 										},
-										_p8)(
+										_p10)(
 										_elm_lang$core$Basics$toString(msg));
 								}
 						}
 					} else {
-						break _v4_9;
+						break _v5_9;
 					}
 				case 'ReceiveTracks':
-					if (_p6._0.ctor === 'Ok') {
-						var _p16 = _p6._0._0;
-						var _p10 = A2(_elm_lang$core$Debug$log, 'ReceiveTracks model', model);
-						var _p11 = model.page;
-						if (((_p11.ctor === 'PlaylistDetails') && (_p11._0.ctor === 'Err')) && (_p11._0._0.ctor === '_Tuple3')) {
-							var _p14 = _p11._0._0._2;
+					if (_p8._0.ctor === 'Ok') {
+						var _p18 = _p8._0._0;
+						var _p12 = A2(_elm_lang$core$Debug$log, 'ReceiveTracks model', model);
+						var _p13 = model.page;
+						if (((_p13.ctor === 'PlaylistDetails') && (_p13._0.ctor === 'Err')) && (_p13._0._0.ctor === '_Tuple3')) {
+							var _p16 = _p13._0._0._2;
 							return A2(
 								_elm_lang$core$Platform_Cmd_ops['!'],
 								_elm_lang$core$Native_Utils.update(
@@ -11039,29 +11050,30 @@ var _user$project$Main$update = F2(
 									{
 										page: _user$project$Model$PlaylistDetails(
 											_elm_lang$core$Result$Ok(
-												{ctor: '_Tuple2', _0: _p16, _1: _p14}))
+												{ctor: '_Tuple2', _0: _p18, _1: _p16}))
 									}),
 								function () {
-									var _p12 = _p14;
-									if (_p12.ctor === 'Nothing') {
+									var _p14 = _p16;
+									if (_p14.ctor === 'Nothing') {
 										return _elm_lang$core$Native_List.fromArray(
 											[]);
 									} else {
-										var _p13 = _p12._0;
+										var _p15 = _p14._0;
 										return _elm_lang$core$Native_List.fromArray(
 											[
 												_user$project$Main$loadSongComments(
-												A3(
-													F3(
-														function (v0, v1, v2) {
-															return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
+												A4(
+													F4(
+														function (v0, v1, v2, v3) {
+															return {ctor: '_Tuple4', _0: v0, _1: v1, _2: v2, _3: v3};
 														}),
 													A2(
 														_elm_lang$core$Basics_ops['++'],
-														_p16.id,
-														A2(_elm_lang$core$Basics_ops['++'], '/', _p13)),
-													A2(_user$project$Views$playlistSongUrl, _p16, _p13),
-													_p13))
+														_p18.id,
+														A2(_elm_lang$core$Basics_ops['++'], '/', _p15)),
+													A2(_user$project$Views$playlistSongUrl, _p18, _p15),
+													_p15,
+													1))
 											]);
 									}
 								}());
@@ -11069,10 +11081,10 @@ var _user$project$Main$update = F2(
 							return _elm_lang$core$Native_Utils.crashCase(
 								'Main',
 								{
-									start: {line: 162, column: 15},
-									end: {line: 168, column: 39}
+									start: {line: 154, column: 15},
+									end: {line: 164, column: 39}
 								},
-								_p11)('WTF');
+								_p13)('WTF');
 						}
 					} else {
 						return A2(
@@ -11085,7 +11097,7 @@ var _user$project$Main$update = F2(
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _user$project$Main$loadComments(_p6._0)
+						_1: _user$project$Main$loadComments(_p8._0)
 					};
 				case 'LoadSongComments':
 					return A2(
@@ -11094,19 +11106,19 @@ var _user$project$Main$update = F2(
 						_elm_lang$core$Native_List.fromArray(
 							[
 								_elm_lang$navigation$Navigation$newUrl(
-								A2(_user$project$Views$playlistSongUrl, _p6._0, _p6._1.id))
+								A2(_user$project$Views$playlistSongUrl, _p8._0, _p8._1.id))
 							]));
 				default:
-					break _v4_9;
+					break _v5_9;
 			}
 		} while(false);
 		return _elm_lang$core$Native_Utils.crashCase(
 			'Main',
 			{
-				start: {line: 124, column: 9},
-				end: {line: 187, column: 47}
+				start: {line: 130, column: 9},
+				end: {line: 177, column: 47}
 			},
-			_p6)(
+			_p8)(
 			_elm_lang$core$Basics$toString(msg));
 	});
 var _user$project$Main$playlistsLoaded = _elm_lang$core$Native_Platform.outgoingPort(
@@ -11126,9 +11138,9 @@ var _user$project$Main$queryToken = _elm_lang$core$Native_Platform.outgoingPort(
 	});
 var _user$project$Main$init = F2(
 	function (flags, page) {
-		var _p18 = A2(_elm_lang$core$Debug$log, 'init', page);
-		if (_p18.ctor === 'Ok') {
-			switch (_p18._0.ctor) {
+		var _p20 = A2(_elm_lang$core$Debug$log, 'init', page);
+		if (_p20.ctor === 'Ok') {
+			switch (_p20._0.ctor) {
 				case 'LoginResult':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -11141,7 +11153,7 @@ var _user$project$Main$init = F2(
 						},
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_user$project$Main$storeToken(_p18._0._0.token)
+								_user$project$Main$storeToken(_p20._0._0.token)
 							]));
 				case 'Index':
 					return A2(
@@ -11166,7 +11178,7 @@ var _user$project$Main$init = F2(
 							state: _user$project$Model$Unlogged,
 							page: _user$project$Model$PlaylistDetails(
 								_elm_lang$core$Result$Err(
-									{ctor: '_Tuple3', _0: _p18._0._0, _1: _p18._0._1, _2: _p18._0._2}))
+									{ctor: '_Tuple3', _0: _p20._0._0, _1: _p20._0._1, _2: _p20._0._2}))
 						},
 						_elm_lang$core$Native_List.fromArray(
 							[
@@ -11181,7 +11193,7 @@ var _user$project$Main$init = F2(
 					start: {line: 51, column: 5},
 					end: {line: 67, column: 57}
 				},
-				_p18)(
+				_p20)(
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					'init error ',

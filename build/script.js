@@ -19,19 +19,22 @@ app.ports.loadComments.subscribe(function (playlist) {
 
 });
 
-app.ports.loadSongComments.subscribe(function (idUrlTitle) {
-    console.log("loadSongComments", idUrlTitle);
+app.ports.loadSongComments.subscribe(function (idUrlTitleIndex) {
+    console.log("loadSongComments", idUrlTitleIndex);
     window.requestAnimationFrame(function (t) {
-        console.log("loadSongComments CALLBACK", idUrlTitle);
-        var fullUrl = location.origin + location.pathname + idUrlTitle[1];
+        console.log("loadSongComments CALLBACK", idUrlTitleIndex);
+        var fullUrl = location.origin + location.pathname + idUrlTitleIndex[1];
         DISQUS.reset({
             reload: true,
             config: function () {
-                this.page.identifier = idUrlTitle[0];
+                this.page.identifier = idUrlTitleIndex[0];
                 this.page.url = fullUrl;
-                this.page.title = idUrlTitle[2];
+                this.page.title = idUrlTitleIndex[2];
                 // this.language = newLanguage;
             }
+        });
+        $('html,body').animate({
+            scrollTop: $("#disqus_thread").offset().top - 50
         });
     });
 })

@@ -96,22 +96,22 @@ userProfile model =
 
 
 viewSong : Int -> SpotifyPlaylist -> Song -> Maybe SongId -> List(Html Msg)
-viewSong i p s selectedSong =
+viewSong i p song selectedSong =
     tr []
-        [ th [ attribute "scope" "row" ] [ text (toString <| i+1) ]
-        , td [] [ text s.name ]
-        , td [] [ text s.artist ]
-        , td [] [ text s.album ]
-        -- , td [] [ a [href (s.href ++ "#disqus_thread"), attribute "data-disqus-identifier" s.id] [text s.id] ]
+        [ th [ id <| song.id, attribute "scope" "row" ] [ text (toString <| i+1) ]
+        , td [] [ text song.name ]
+        , td [] [ text song.artist ]
+        , td [] [ text song.album ]
+        -- , td [] [ a [href (song.href ++ "#disqus_thread"), attribute "data-disqus-identifier" song.id] [text song.id] ]
         , td []
              [ {-span [ href (playlistSongUrl p s)
-                    , attribute "data-disqus-identifier" (p.id ++ "/" ++ s.id)
-                    ] [text s.id]
-             , -}button [ onClick (LoadSongComments p s) ] [ text "comments" ] 
+                    , attribute "data-disqus-identifier" (p.id ++ "/" ++ song.id)
+                    ] [text song.id]
+             , -}button [ onClick (LoadSongComments p song) ] [ text "comments" ] 
              ]
         ]
     :: case selectedSong of
-        Just selId -> if s.id /= selId
+        Just selId -> if song.id /= selId
                    then []
                    else [ tr []
                             [ td [ attribute "colspan" "5"]
