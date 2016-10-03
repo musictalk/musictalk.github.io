@@ -10905,7 +10905,13 @@ var _user$project$Routing$toUrl = function (count) {
 
 var _user$project$Main$pageCmd = F2(
 	function (token, model) {
-		var _p0 = model.page;
+		var _p0 = A2(
+			_elm_lang$core$Basics$always,
+			model.page,
+			A2(
+				_elm_lang$core$Debug$log,
+				'pageCmd',
+				_user$project$Model$dumpModel(model)));
 		switch (_p0.ctor) {
 			case 'IndexData':
 				return _elm_lang$core$Native_List.fromArray(
@@ -10922,7 +10928,7 @@ var _user$project$Main$pageCmd = F2(
 						return true;
 					}
 				}();
-				return needFetchTracks ? _elm_lang$core$Native_List.fromArray(
+				return A2(_elm_lang$core$Debug$log, 'needFetchTracks', needFetchTracks) ? _elm_lang$core$Native_List.fromArray(
 					[
 						A3(_user$project$Spotify$getPlaylistTracks, token, _p0._0, _p2)
 					]) : _elm_lang$core$Native_List.fromArray(

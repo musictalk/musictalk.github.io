@@ -89,15 +89,15 @@ stateCmd s =
 
 
 pageCmd : SpotifyToken -> Model -> List (Cmd Msg)
-pageCmd token model =
-    case model.page of
+pageCmd  token model =
+    case always  model.page (Debug.log "pageCmd" (dumpModel model)) of
         IndexData _ -> [ Spotify.getPlaylists token ]
         PlaylistReq uid pid song ->
             let needFetchTracks = case model.page of
                 PlaylistDetails playlist _ -> playlist.id /= pid
                 _ -> True
             in
-              if needFetchTracks then [ Spotify.getPlaylistTracks token uid pid ] else []
+              if Debug.log "needFetchTracks" needFetchTracks then [ Spotify.getPlaylistTracks token uid pid ] else []
         PlaylistDetails _ _ -> []
         -- _ -> Debug.crash "pageCmd" p
 
