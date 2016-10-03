@@ -10295,40 +10295,38 @@ var _user$project$Views$viewSong = F4(
 						_elm_lang$core$Native_List.fromArray(
 							[
 								A2(
-								_elm_lang$html$Html$button,
+								_elm_lang$html$Html$a,
 								_elm_lang$core$Native_List.fromArray(
 									[
+										_elm_lang$html$Html_Attributes$href('#'),
 										_elm_lang$html$Html_Events$onClick(
 										A2(_user$project$Model$LoadSongComments, p, song))
 									]),
 								_elm_lang$core$Native_List.fromArray(
 									[
-										_elm_lang$html$Html$text('comments')
-									])),
-								A2(
-								_elm_lang$html$Html$span,
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html_Attributes$class('glyphicon glyphicon-comment')
-									]),
-								_elm_lang$core$Native_List.fromArray(
-									[])),
-								A2(
-								_elm_lang$html$Html$span,
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html_Attributes$class('disqus-comment-count'),
 										A2(
-										_elm_lang$html$Html_Attributes$attribute,
-										'data-disqus-identifier',
+										_elm_lang$html$Html$span,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Attributes$class('glyphicon glyphicon-comment')
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[])),
 										A2(
-											_elm_lang$core$Basics_ops['++'],
-											p.id,
-											A2(_elm_lang$core$Basics_ops['++'], '/', song.id)))
-									]),
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html$text('a')
+										_elm_lang$html$Html$span,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Attributes$class('disqus-comment-count'),
+												A2(
+												_elm_lang$html$Html_Attributes$attribute,
+												'data-disqus-identifier',
+												A2(
+													_elm_lang$core$Basics_ops['++'],
+													p.id,
+													A2(_elm_lang$core$Basics_ops['++'], '/', song.id)))
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[]))
 									]))
 							]))
 					])),

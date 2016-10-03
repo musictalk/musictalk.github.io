@@ -124,13 +124,14 @@ viewSong i p song selectedSong =
                             ] [text song.id]
                      ,
                   -}
-                  button [ onClick (LoadSongComments p song) ]
-                         [ text "comments" ]
-                , span [ class "glyphicon glyphicon-comment" ] []
-                , span [ class "disqus-comment-count"
-                                , attribute "data-disqus-identifier" (p.id ++ "/" ++ song.id)
-                                ]
-                                [ text "a"]
+                  a [ href "#", onClick (LoadSongComments p song) ]
+                    [ span [ class "glyphicon glyphicon-comment" ] []
+                    , span
+                        [ class "disqus-comment-count"
+                        , attribute "data-disqus-identifier" (p.id ++ "/" ++ song.id)
+                        ]
+                        []
+                    ]
                 ]
             ]
             :: if isCurrentSong then
@@ -174,6 +175,7 @@ viewPlaylist playlist =
                 [ text playlist.owner ]
             ]
         ]
+
 
 viewPlayLists : List SpotifyPlaylist -> Html Msg
 viewPlayLists playlists =
@@ -263,7 +265,6 @@ content model =
                                         ]
                                     , node "script" [ attribute "type" "text/javascript" ] [ text "setupTables();" ]
                                     ]
-                                
                                 , node "script" [ attribute "type" "text/javascript" ] [ text "DISQUSWIDGETS.getCount({reset: true});" ]
                                   --   ]
                                 ]
