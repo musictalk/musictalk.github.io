@@ -124,7 +124,13 @@ viewSong i p song selectedSong =
                             ] [text song.id]
                      ,
                   -}
-                  button [ onClick (LoadSongComments p song) ] [ text "comments" ]
+                  button [ onClick (LoadSongComments p song) ]
+                         [ text "comments" ]
+                , span [ class "glyphicon glyphicon-comment" ] []
+                , span [ class "disqus-comment-count"
+                                , attribute "data-disqus-identifier" (p.id ++ "/" ++ song.id)
+                                ]
+                                [ text "a"]
                 ]
             ]
             :: if isCurrentSong then
@@ -168,17 +174,6 @@ viewPlaylist playlist =
                 [ text playlist.owner ]
             ]
         ]
-
-
-
---   Html.li [class "playlist", Html.Attributes.attribute "data-disqus-identifier" (Spotify.playlistId p)]
---     [ text p.name
---     , text p.owner
---     , Html.ul [] (List.map viewSong p.songs)
---     , button [ onClick <| LoadPlaylist p] [ text "load" ]
---     , button [ onClick <| LoadPlaylistComments p] [ text "comments" ]
---     ]
-
 
 viewPlayLists : List SpotifyPlaylist -> Html Msg
 viewPlayLists playlists =
@@ -268,6 +263,8 @@ content model =
                                         ]
                                     , node "script" [ attribute "type" "text/javascript" ] [ text "setupTables();" ]
                                     ]
+                                
+                                , node "script" [ attribute "type" "text/javascript" ] [ text "DISQUSWIDGETS.getCount({reset: true});" ]
                                   --   ]
                                 ]
                             ]

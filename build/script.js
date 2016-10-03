@@ -9,6 +9,7 @@ app.ports.loadComments.subscribe(function (playlist) {
     console.log("loadComments: ", playlist);
     var threadId = playlist.owner + "/" + playlist.id;
     console.log("loadComments threadId: ", threadId);
+    init();
     DISQUS.reset({
         reload: true,
         config: function () {
@@ -24,6 +25,7 @@ app.ports.loadSongComments.subscribe(function (idUrlTitleIndex) {
     window.requestAnimationFrame(function (t) {
         console.log("loadSongComments CALLBACK", idUrlTitleIndex);
         var fullUrl = location.origin + location.pathname + idUrlTitleIndex[1];
+        init();
         DISQUS.reset({
             reload: true,
             config: function () {
@@ -84,3 +86,31 @@ function setupTables() {
     // console.log ("setupTables", $('.table'));
     // $('.table').DataTable({"paging":   false, "info": false});
 }
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+var init = function() {
+    var element = document.getElementById("element-id");
+    if(element)
+        element.parentNode.removeChild(element);
+    if(window.disqusInitialized || !document.getElementById("disqus_thread"))
+        return;
+    window.disqusInitialized = true;
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+};
+/* * * Disqus Reset Function * * */
+var reset = function (newIdentifier, newUrl, newTitle, newLanguage) {
+    init();
+    DISQUS.reset({
+        reload: true,
+        config: function () {
+            this.page.identifier = newIdentifier;
+            this.page.url = "http://localhost:8000/index.html" + newUrl;
+            this.page.title = newTitle;
+            this.language = newLanguage;
+        }
+    });
+};
+
+init();
