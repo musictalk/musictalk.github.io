@@ -12,7 +12,7 @@ gulp.task('clean', function(){
 
 gulp.task('build', ['elm-init'], function(){
   return gulp.src('src/*.elm')
-    .pipe(elm.bundle('lib.js'))
+    .pipe(elm.bundle('lib.js',{warn:true}))
     .pipe(gulp.dest('build/'));
 });
 

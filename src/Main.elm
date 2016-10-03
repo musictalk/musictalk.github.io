@@ -108,7 +108,7 @@ sense.
 -}
 urlUpdate : Result String Page -> Model -> (Model, Cmd Msg)
 urlUpdate result model =
-  case fst <| Debug.log "urlUpdate/model" (result, model) of
+  case fst <| Debug.log "urlUpdate/model" (result, dumpModel model) of
 --   case result of
     -- Ok (Playlist uid pid) -> model ! [Spotify.getPlaylistTracks "" uid pid]
     Ok page ->
@@ -126,7 +126,7 @@ urlUpdate result model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    let _ = Debug.log "update/model" (msg,model) in
+    let _ = Debug.log "update/model" (dump msg model) in
         case msg {- Debug.log "update" msg -} of
             StartSpotifyLogin ->
                 model ! [ redirect <| Spotify.loginUrl model.flags.location ]

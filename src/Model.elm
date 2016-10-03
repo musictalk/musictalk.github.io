@@ -71,3 +71,33 @@ type Msg
   | ReceiveTracks (Result Http.Error SpotifyPlaylist)
   | LoadPlaylistComments SpotifyPlaylist
   | LoadSongComments SpotifyPlaylist Song
+
+dumpUpdate : Msg -> String
+dumpUpdate update = case update of
+    StartSpotifyLogin -> "StartSpotifyLogin"
+    QueryCachedToken _ -> "QueryCachedToken"
+    SpotifyResponse (_,x) -> "SpotifyResponse " ++
+      (case x of
+        SpotifyUser _ -> "SpotifyUser"
+        SpotifyPlaylists _ -> "SpotifyPlaylists"
+        SpotifyError _ -> "SpotifyError")
+    LoadPlaylist _ -> "LoadPlaylist"
+    ReceiveTracks _ -> "ReceiveTracks"
+    LoadPlaylistComments _ -> "LoadPlaylistComments"
+    LoadSongComments _ _ -> "LoadSongComments"
+
+dumpModel : Model -> ( String, String )
+dumpModel model = 
+  let l = case model.state of
+            Unlogged -> "Unlogged"
+            GotToken _ -> "GotToken" 
+            LoggedIn _ _ -> "LoggedIn" 
+      pd = case model.page of
+             IndexData _ -> "IndexData"
+             PlaylistReq _ _ _ -> "PlaylistReq"
+             PlaylistDetails _ _ -> "PlaylistDetails"
+  in
+    (l,pd)
+
+dump : Msg -> Model -> ( String, ( String, String ) )
+dump update model = (dumpUpdate update, dumpModel model) 

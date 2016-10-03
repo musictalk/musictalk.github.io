@@ -9546,6 +9546,71 @@ var _evancz$url_parser$UrlParser$format = F2(
 				}));
 	});
 
+var _user$project$Model$dumpModel = function (model) {
+	var pd = function () {
+		var _p0 = model.page;
+		switch (_p0.ctor) {
+			case 'IndexData':
+				return 'IndexData';
+			case 'PlaylistReq':
+				return 'PlaylistReq';
+			default:
+				return 'PlaylistDetails';
+		}
+	}();
+	var l = function () {
+		var _p1 = model.state;
+		switch (_p1.ctor) {
+			case 'Unlogged':
+				return 'Unlogged';
+			case 'GotToken':
+				return 'GotToken';
+			default:
+				return 'LoggedIn';
+		}
+	}();
+	return {ctor: '_Tuple2', _0: l, _1: pd};
+};
+var _user$project$Model$dumpUpdate = function (update) {
+	var _p2 = update;
+	switch (_p2.ctor) {
+		case 'StartSpotifyLogin':
+			return 'StartSpotifyLogin';
+		case 'QueryCachedToken':
+			return 'QueryCachedToken';
+		case 'SpotifyResponse':
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'SpotifyResponse ',
+				function () {
+					var _p3 = _p2._0._1;
+					switch (_p3.ctor) {
+						case 'SpotifyUser':
+							return 'SpotifyUser';
+						case 'SpotifyPlaylists':
+							return 'SpotifyPlaylists';
+						default:
+							return 'SpotifyError';
+					}
+				}());
+		case 'LoadPlaylist':
+			return 'LoadPlaylist';
+		case 'ReceiveTracks':
+			return 'ReceiveTracks';
+		case 'LoadPlaylistComments':
+			return 'LoadPlaylistComments';
+		default:
+			return 'LoadSongComments';
+	}
+};
+var _user$project$Model$dump = F2(
+	function (update, model) {
+		return {
+			ctor: '_Tuple2',
+			_0: _user$project$Model$dumpUpdate(update),
+			_1: _user$project$Model$dumpModel(model)
+		};
+	});
 var _user$project$Model$Flags = function (a) {
 	return {location: a};
 };
@@ -10890,7 +10955,11 @@ var _user$project$Main$urlUpdate = F2(
 			A2(
 				_elm_lang$core$Debug$log,
 				'urlUpdate/model',
-				{ctor: '_Tuple2', _0: result, _1: model}));
+				{
+					ctor: '_Tuple2',
+					_0: result,
+					_1: _user$project$Model$dumpModel(model)
+				}));
 		if (_p5.ctor === 'Ok') {
 			var _p7 = _p5._0;
 			var _p6 = model.state;
@@ -10969,7 +11038,7 @@ var _user$project$Main$update = F2(
 		var _p8 = A2(
 			_elm_lang$core$Debug$log,
 			'update/model',
-			{ctor: '_Tuple2', _0: msg, _1: model});
+			A2(_user$project$Model$dump, msg, model));
 		var _p9 = msg;
 		_v5_9:
 		do {
