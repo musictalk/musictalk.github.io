@@ -116,10 +116,10 @@ urlUpdate result model =
         Unlogged -> Debug.crash "unlogged" model
         LoggedIn token _ -> 
           let m = {model | page = Routing.pageToData page } in
-          m ! (stateCmd m.state :: pageCmd token model)
+          m ! (stateCmd m.state :: pageCmd token m)
         GotToken token ->
           let m = {model | page = Routing.pageToData page } in
-          m ! (stateCmd m.state :: pageCmd token model)
+          m ! (stateCmd m.state :: pageCmd token m)
 
     Err _ ->
       (model, Navigation.modifyUrl "#")

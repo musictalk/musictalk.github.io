@@ -10992,7 +10992,7 @@ var _user$project$Main$urlUpdate = F2(
 						A2(
 							_elm_lang$core$List_ops['::'],
 							_user$project$Main$stateCmd(m.state),
-							A2(_user$project$Main$pageCmd, _p6._0, model)));
+							A2(_user$project$Main$pageCmd, _p6._0, m)));
 				default:
 					var m = _elm_lang$core$Native_Utils.update(
 						model,
@@ -11005,7 +11005,7 @@ var _user$project$Main$urlUpdate = F2(
 						A2(
 							_elm_lang$core$List_ops['::'],
 							_user$project$Main$stateCmd(m.state),
-							A2(_user$project$Main$pageCmd, _p6._0, model)));
+							A2(_user$project$Main$pageCmd, _p6._0, m)));
 			}
 		} else {
 			return {
